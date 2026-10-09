@@ -1,0 +1,25 @@
+rules_version = '2';
+service firebase.storage {
+ match /b/{bucket}/o {
+  function admin(){return request.auth != null && (firestore.exists(/databases/(default)/documents/roles/$(request.auth.uid)) ? firestore.get(/databases/(default)/documents/roles/$(request.auth.uid)).data.role == 'admin' : request.auth.token.get('admin', false) == true);}
+  function published(id){return firestore.get(/databases/(default)/documents/species/$(id)).data.is_published == true;}
+  function teacher(){return request.auth != null && (admin() || (firestore.exists(/databases/(default)/documents/roles/$(request.auth.uid)) && firestore.get(/databases/(default)/documents/roles/$(request.auth.uid)).data.role == 'teacher'));}
+  match /submissions/{id}/photos/{file} {
+   allow read: if request.auth != null && (admin() || firestore.get(/databases/(default)/documents/submissions/$(id)).data.owner_id == request.auth.uid);
+   allow create: if resource == null && teacher() && firestore.get(/databases/(default)/documents/submissions/$(id)).data.owner_id == request.auth.uid && firestore.get(/databases/(default)/documents/submissions/$(id)).data.status == 'draft' && request.resource.size <= 8 * 1024 * 1024 && request.resource.contentType.matches('image/(jpeg|png|webp)') && file.matches('[a-zA-Z0-9_-]+[.](jpg|png|webp)');
+   allow update, delete: if false;
+  }
+  match /species/{id}/photos/{file} {
+   allow read: if admin() || published(id);
+   allow create, update: if admin() && request.resource.size <= 8 * 1024 * 1024
+    && request.resource.contentType.matches('image/(jpeg|png|webp)');
+   allow delete: if false;
+  }
+  match /species/{id}/models/{file} {
+   allow read: if admin() || published(id);
+   allow create, update: if admin() && request.resource.size <= 30 * 1024 * 1024 && request.resource.contentType == 'model/gltf-binary' && file.matches('[a-zA-Z0-9_-]+[.]glb');
+   allow delete: if false;
+  }
+  match /{path=**} {allow read, write: if false;}
+ }
+}

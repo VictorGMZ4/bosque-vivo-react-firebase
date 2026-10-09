@@ -1,0 +1,30 @@
+{
+  "name": "bosque-vivo-react-firebase",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "node --test tests/domain.test.mjs tests/offline.test.mjs tests/qr-url.test.mjs",
+    "test:integration": "node scripts/run-local.mjs test",
+    "emulators": "node scripts/start-emulators.mjs",
+    "import:local": "node scripts/run-local.mjs import"
+  },
+  "dependencies": {
+    "@google/model-viewer": "^4.3.1",
+    "firebase": "^12.0.0",
+    "qrcode": "^1.5.4",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.0.0"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "firebase-tools": "^14.0.0",
+    "tailwindcss": "^4.3.3",
+    "vite": "^7.2.0"
+  }
+}

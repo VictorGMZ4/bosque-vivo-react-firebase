@@ -1,0 +1,8 @@
+work
+firebase-export-*
+*.log
+.env*
+service-account*.json
+node_modules
+dist
+.git

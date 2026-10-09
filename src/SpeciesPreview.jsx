@@ -1,0 +1,3 @@
+import React from 'react';
+import {habits} from './data';
+export function SpeciesPreview({data}){return <article className="panel my-6" aria-label="Previsualización de especie"><p className="eyebrow">PREVISUALIZACIÓN · SIN PUBLICAR</p><h2>{data.common_name||'Nombre pendiente'}</h2><p className="latin">{data.scientific_name}</p><p>{data.family} · {habits[data.habit]}</p>{[['Descripción',data.description],['Morfología',data.morphology],['Ecología',data.ecology],['Usos',data.uses],['Precauciones',data.precautions],['Fuentes',data.references]].map(([title,value])=>value&&<div key={title}><h3>{title}</h3><p className="preserve">{value}</p></div>)}</article>;}

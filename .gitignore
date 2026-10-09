@@ -1,0 +1,8 @@
+node_modules/
+dist/
+work/
+firebase-export-*/
+*.log
+.env*
+!.env.example
+service-account*.json

@@ -1,0 +1,54 @@
+@layer components {
+ .catalog-hero{padding-top:32px;gap:48px;grid-template-columns:1fr 1fr}
+ .welcome-model{min-width:0;width:100%;border-radius:22px;background:#edf1e5;border:1px solid #d9e2cd;overflow:hidden;position:relative}
+ .welcome-model-tag{position:absolute;z-index:1;left:22px;top:18px;padding:5px 10px;border-radius:20px;background:#fffef9ed;color:#526640;font-size:9px;letter-spacing:1.5px;pointer-events:none}
+ .welcome-model-stage{height:380px;position:relative;background:radial-gradient(ellipse at center,#f7f8f0,#dee7cf)}
+ .welcome-model-stage model-viewer{width:100%;height:100%;display:block;position:relative;transition:opacity 200ms ease}
+ .welcome-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+ .welcome-loading{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);padding:8px 14px;background:#fffef9ed;border-radius:20px;font-size:12px;white-space:nowrap}
+ .welcome-load{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+ .welcome-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;border-top:1px solid #d6dfca;flex-wrap:wrap}
+ .welcome-controls p{font-size:12px;color:#536445;margin:0}
+ .welcome-controls .button{font-size:11px;min-height:40px;padding:8px 12px}
+ .welcome-feedback{padding:16px;font-size:13px}
+ .welcome-credit{font-size:10px;color:#5c6d4e;padding:0 20px 14px;margin:0}
+ .qr-share-section{display:grid;grid-template-columns:1fr 360px;gap:54px;align-items:center;padding:42px;background:#edf2e4;border:1px solid #d5e0c6;border-radius:22px;margin:30px 0;scroll-margin-top:24px}
+ .qr-share-copy h2{font-size:clamp(30px,3vw,42px)}
+ .qr-share-copy h2 em{font-style:normal;color:#647b4d}
+ .qr-share-copy>p{max-width:540px;color:var(--muted)}
+ .qr-share-copy .actions{margin:24px 0 0}
+ .qr-preview{padding:10px;min-width:0;transform:rotate(1deg)}
+ .species-qr-label{background:white;color:#183d2a;text-align:center;border:1px solid #dce2d6;border-radius:12px;padding:28px 24px 18px;box-shadow:0 8px 24px #243e3210;overflow-wrap:anywhere}
+ .qr-label-brand{display:flex;align-items:center;justify-content:center;gap:9px;font:25px var(--serif)}
+ .qr-label-brand .ui-icon{width:28px;height:28px}
+ .qr-label-brand small{display:block;font:7px 'Segoe UI',sans-serif;letter-spacing:1.6px;margin-top:5px}
+ .qr-label-kicker{font-size:8px;letter-spacing:1.5px;margin:22px 0 10px}
+ .species-qr-label h3{font-size:30px;line-height:1.15;margin:0 0 8px}
+ .qr-label-scientific{font-style:italic;font-size:15px;margin:0 0 5px}
+ .qr-label-family{font-size:11px;color:#576a50;margin:0 0 12px}
+ .species-qr-label>img{display:block;width:100%;max-width:240px;height:auto;margin:0 auto;background:white}
+ .qr-label-call{font-weight:600;font-size:12px;margin:10px 0 7px}
+ .qr-label-url{font-size:9px;line-height:1.5;color:#485940;margin:0}
+ .qr-label-demo{font-size:10px;color:#775d23}
+ .qr-label-footer{font-size:7px;letter-spacing:1.6px;border-top:1px solid #dce2d6;padding-top:14px;margin:18px 0 0}
+ .qr-print-sheet{display:none}
+ @media(max-width:900px){.qr-share-section{grid-template-columns:1fr;gap:24px;padding:26px}.qr-preview{width:min(360px,100%);margin:auto}.catalog-hero{gap:24px}.welcome-model-stage{height:330px}}
+ @media(max-width:600px){.catalog-hero{grid-template-columns:1fr}.welcome-model-stage{height:340px}.qr-share-section{padding:22px}.qr-preview{padding:0;transform:none}.species-qr-label{padding:24px 20px}.qr-share-copy .button{width:100%}}
+ @media(prefers-reduced-motion:reduce){.welcome-model-stage model-viewer{transition:none}}
+}
+@media print {
+ @page{size:A4 portrait;margin:15mm}
+ body:has(>.qr-print-sheet)>*{display:none!important}
+ body>.qr-print-sheet{display:block!important;width:100%;color:black;background:white}
+ body:has(>.qr-print-sheet){background:white!important;margin:0!important}
+ .qr-print-sheet .species-qr-label{width:110mm;max-width:100%;margin:8mm auto;padding:8mm 7mm 5mm;border:0.35mm solid #263d2d;border-radius:3mm;box-shadow:none;break-inside:avoid;page-break-inside:avoid;color:black;background:white;print-color-adjust:exact}
+ .qr-print-sheet .qr-label-brand{font-size:22pt}
+ .qr-print-sheet .qr-label-brand small{font-size:7pt}
+ .qr-print-sheet .species-qr-label h3{font-size:24pt}
+ .qr-print-sheet .qr-label-scientific{font-size:12pt}
+ .qr-print-sheet .qr-label-family{font-size:9pt;color:black}
+ .qr-print-sheet .species-qr-label>img{width:60mm;max-width:100%;height:auto}
+ .qr-print-sheet .qr-label-call{font-size:10pt}
+ .qr-print-sheet .qr-label-url{font-size:8pt;color:black}
+ .qr-print-sheet .qr-label-footer,.qr-print-sheet .qr-label-kicker{font-size:7pt}
+}

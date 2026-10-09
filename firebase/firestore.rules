@@ -1,0 +1,15 @@
+rules_version = '2';
+service cloud.firestore {
+ match /databases/{database}/documents {
+  function admin(){return request.auth != null && (exists(/databases/$(database)/documents/roles/$(request.auth.uid)) ? get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.role == 'admin' : request.auth.token.get('admin', false) == true);}
+  function published(id){return get(/databases/$(database)/documents/species/$(id)).data.is_published == true;}
+  match /species/{id} {allow read: if admin() || resource.data.is_published == true; allow write: if false;}
+  match /specimens/{id} {allow read: if admin() || published(resource.data.species_id); allow write: if false;}
+  match /photos/{id} {allow read: if admin() || published(resource.data.species_id); allow write: if false;}
+  match /roles/{uid} {allow read: if request.auth != null && (request.auth.uid == uid || admin()); allow write: if false;}
+  match /profiles/{uid} {allow read: if request.auth != null && (request.auth.uid == uid || admin()); allow write: if false;}
+  match /role_requests/{uid} {allow read: if request.auth != null && (request.auth.uid == uid || admin()); allow write: if false;}
+  match /submissions/{id} {allow read: if request.auth != null && (admin() || resource.data.owner_id == request.auth.uid); allow write: if false;}
+  match /{document=**} {allow read, write: if false;}
+ }
+}
