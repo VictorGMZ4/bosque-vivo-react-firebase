@@ -52,3 +52,6 @@
  .qr-print-sheet .qr-label-url{font-size:8pt;color:black}
  .qr-print-sheet .qr-label-footer,.qr-print-sheet .qr-label-kicker{font-size:7pt}
 }
+
+.catalog-hero.catalog-hero--text{grid-template-columns:1fr;gap:0}
+.catalog-hero--text>div{max-width:760px}

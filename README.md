@@ -108,3 +108,7 @@ La consulta inicial descarga como máximo 1.000 especies y pagina en el cliente,
 
 Referencias oficiales consultadas: [emuladores](https://firebase.google.com/docs/emulator-suite/install_and_configure), [funciones callable](https://firebase.google.com/docs/functions/callable), [claims y permisos](https://firebase.google.com/docs/auth/admin/custom-claims), [runtime Node](https://firebase.google.com/docs/functions/manage-functions). Detalles de la entrega en [bitácora](docs/BITACORA.md).
 
+# Importar fichas desde Word y Excel
+
+Los formularios de registro y propuesta incluyen plantillas descargables y carga de datos para revisión antes de guardar. Consulta [la guía de importación](docs/IMPORTAR-ESPECIES.md).
+

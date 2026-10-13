@@ -24,3 +24,22 @@ El rediseño de cuentas concentra ingreso, registro y perfil en `src/pages/Accou
 `SpeciesQR` genera SVG y PNG desde una ruta pública validada por `speciesPublicUrl`. La etiqueta de impresión se monta mediante portal fuera de la raíz React; el CSS oculta el resto de la interfaz únicamente cuando existe esa etiqueta. `VITE_PUBLIC_SITE_URL` fija un origen estable. IDs y rutas se conservan.
 
 Vercel sirve `dist` con fallback SPA. Firebase mantiene Authentication, Firestore, Storage, reglas y funciones. Véase [VERCEL.md](VERCEL.md). El service worker no precarga GLB ni motor 3D. Django permanece independiente.
+
+
+### Portada del campus (2026-10-12)
+`CampusWelcome` se monta únicamente en el inicio. Una imagen HTML prioritaria sirve como respaldo; el módulo diferido `campus-scene` dibuja la misma fotografía con Three.js. `campus-scene-math` mantiene cobertura completa al mover la cámara y redimensionar. La escena se libera al desmontar y no intercepta el desplazamiento. La frase, enlaces y créditos son HTML accesible. La fotografía en `public/images/campus-unipaz.webp` procede del archivo aportado por el usuario y conserva su crédito institucional. No hay mapa ni localizaciones interactivas.
+## Importación de plantillas Office
+
+`PlantImport` carga bajo demanda el lector `species-import.js`. Se extrae únicamente texto de los campos botánicos permitidos de las plantillas DOCX/XLSX. Se limita el archivo a 5 MB, el contenido ZIP declarado a 20 MB y 1000 entradas, y Excel a 100 especies. XML con DTD/entidades se rechaza y las fórmulas no se ejecutan. React muestra los valores como texto; no se inyecta HTML del documento.
+
+Los datos rellenan los formularios existentes de administración y propuestas. Cada registro requiere guardado explícito y mantiene los endpoints, permisos y validaciones de Firebase existentes. Las propuestas siguen `draftSubmission` y `submitDraft`. Los documentos y el lote permanecen en memoria del navegador, sin almacenamiento adicional ni nuevas reglas. Las plantillas versionadas están en `public/templates`.
+
+### Transición a la colección
+
+El inicio `/` monta `CampusWelcome` sin consultar ni renderizar el catálogo. `/catalogo/` monta `Catalog`. `CollectionTransition` permanece alrededor del contenido durante la navegación: desvanece el texto, acerca el campus y usa una capa fotográfica que sale hacia arriba al revelar el catálogo. Limpia temporizadores al terminar o desmontar. Los enlaces conservan su destino real y el modo de movimiento reducido omite la animación.
+
+### Vista rápida y galería
+
+`SpeciesQuickView` utiliza el registro ya cargado por el catálogo. `PhotoGallery` presenta los recursos ya autorizados de la ficha; `StorageImage` mantiene el acceso a Storage y el respaldo cuando falta una fotografía. `BotanicalDialog` monta un diálogo nativo mediante portal para evitar conflictos con animaciones de la página, conserva el foco y restaura el desplazamiento al cerrar. No hay nuevos endpoints ni permisos.
+
+La galería interactiva está desactivada por decisión del usuario (2026-10-13); la administración conserva los registros y controles de fotografías. ModelViewer y SpeciesQR usan claves diferenciadas entre hermanos para evitar acumulación de nodos al actualizar la ficha.

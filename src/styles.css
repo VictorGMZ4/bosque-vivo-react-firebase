@@ -62,3 +62,5 @@ input:focus,select:focus,textarea:focus{border-color:#637a43;box-shadow:0 0 0 3p
 
 
 }
+
+.detail-save-actions{display:grid;gap:16px;justify-items:start;margin:24px 0}

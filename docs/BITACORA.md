@@ -90,3 +90,50 @@ El export local generó correctamente sus archivos, pero Windows rechazó el ren
 
 Corregida la guía Vercel: el workspace pnpm ya instala functions. npm --prefix functions install ejecutaba prepare en el enlace local de firebase-admin y fallaba por gulp ausente. Verificado pnpm install --frozen-lockfile: dos proyectos, salida 0, dependencias actualizadas. Persiste advertencia de Node 24 frente al runtime declarado Node 22; no se cambió el Node del sistema ni se desplegó.
 
+
+
+## 2026-10-12 — Bienvenida del campus con Three.js
+
+- Portada en `/` con la fotografía aérea aportada por el usuario, frase HTML y catálogo debajo en la misma página; `/catalogo/` conserva el acceso directo.
+- Three.js 0.183.2 como dependencia directa. Escena fotográfica en plano con cámara ortográfica y desplazamiento suave con ratón; no representa una reconstrucción 3D del campus.
+- Carga diferida, pausa manual, renderizado a demanda y suspensión fuera de pantalla/pestaña. Respaldo HTML sin WebGL y preferencia de movimiento reducido. Limpieza de recursos al navegar.
+- Fotografía convertida a WebP (1.84 MB frente a 11.05 MB), sin recorte del archivo ni eliminación del crédito. Crédito adicional visible en la portada.
+- Recursos Three.js excluidos de la precarga PWA. Sin cambios de backend, Django ni despliegues.
+- Validación: 12 pruebas de Node correctas, compilación Vite correcta; revisión en navegador de portada, enlace al catálogo y ancho móvil de 390 px. El navegador informó que Firestore local no estaba accesible y mostró cero especies; no se verificó un catálogo poblado en esta revisión.
+## 2026-10-12 — Plantillas rellenables e importación de especies
+
+- Word con ficha de dos páginas y Excel con una especie por fila, instrucciones y lista de tipos de planta. Descargas en los formularios de administración y propuestas.
+- Lectura local de DOCX/XLSX, avisos de campos pendientes, límites y fórmulas; revisión editable antes del guardado. Lotes de hasta 100 filas con avance individual y conservación de datos si falla el guardado.
+- Se mantiene el circuito de aprobación del profesor y el control de acceso existente. No se modificaron backend, reglas ni Django; no hubo despliegue.
+- Validación: `pnpm test` (19 pruebas) y `pnpm build` correctos; lector probado con copias rellenadas de ambas plantillas, entradas dañadas, XML con entidades, fórmulas, campos repetidos y límites de archivo; prueba de interfaz con Firebase simulado para carga sin guardado, error y reintento, avance de fila, flujo de profesor, bloqueo de estudiante y ancho móvil sin desbordamiento.
+- Word se renderizó con Microsoft Word y se inspeccionaron ambas páginas; el renderizador empaquetado no encontró LibreOffice. Excel se abrió y se exportó una vista de los encabezados para revisar su presentación. Los PDF/PNG de comprobación permanecen en `work`, ignorado por Git.
+
+
+## 2026-10-12 — Bienvenida independiente y transición botánica
+
+- El inicio muestra únicamente la bienvenida del campus; el catálogo se consulta en `/catalogo/`. Se retiró la instrucción de desplazarse al catálogo en la misma página.
+- Explorar la colección desvanece el mensaje y activa hojas SVG desde los bordes, que se retiran al cambiar de ruta (820 ms). Teclado y movimiento reducido navegan directamente. Se conservan enlaces reales, clic con modificadores y limpieza de temporizadores.
+- Comprobación local con Edge/Playwright: separación de rutas, animación, limpieza al terminar, botón Atrás, movimiento reducido y ancho móvil. Captura revisada en `work/transition-preview`.
+
+## 2026-10-12 — Revisión de la transición de bienvenida
+
+Por preferencia del usuario, se retiraron las hojas SVG. La transición actual acerca la fotografía del campus, desvanece el mensaje y desplaza la imagen hacia arriba para revelar la sección de especies en la ruta independiente `/catalogo/`. Las tarjetas que entran en pantalla usan un movimiento corto de 12 px con opacidad, sin bloquear interacción. Movimiento reducido y teclado mantienen navegación inmediata. Prueba de navegador: rutas, ausencia de hojas, limpieza, Atrás, movimiento reducido y ancho móvil correctos. Compilación verificada.
+
+## 2026-10-12 — Retiro de planta decorativa del catálogo
+
+Se retiró el visor WelcomeModel de la cabecera del catálogo a petición del usuario y se ajustó la cabecera a una columna. No se eliminaron especies ni archivos 3D. Compilación verificada.
+
+## 2026-10-13 — Vista rápida y galería de detalles
+
+- Cada tarjeta del catálogo ofrece Vista rápida con fotografía, taxonomía, descripción abreviada, crédito y acceso a la ficha. Cerrar conserva búsqueda y posición, y devuelve el foco al botón de origen.
+- La galería incluye fotografía principal y adicionales, miniaturas, ampliación 2×, navegación con flechas y deslizamiento táctil. Se conservan los formularios administrativos y los créditos.
+- Diálogos nativos con Escape, confinamiento del foco, bloqueo del desplazamiento de fondo, diseño móvil y movimiento reducido. Sin nuevas dependencias ni cambios en Firebase.
+- Validación: 19 pruebas unitarias y compilación correctas. `scripts/check-gallery-ui.mjs` verifica vista rápida, búsqueda conservada, foco, enlace a ficha, flechas, gesto táctil real, miniaturas, zoom y ancho móvil con datos e imágenes simulados. Capturas de escritorio y móvil inspeccionadas. Revisión independiente sin hallazgos importantes. No se probaron fotografías privadas de producción ni se desplegó.
+
+## 2026-10-13 — Espacio entre acciones de guardado
+
+Se añadieron 16 px de separación vertical entre Guardar especie y Guardar sin conexión en la ficha, conservando sus mensajes y comportamiento.
+
+## 2026-10-13 — Retiro de galería y corrección del visor duplicado
+
+Se retiró la galería pública interactiva; se conserva Vista rápida y la gestión administrativa de fotografías sin borrar archivos. Se reprodujo la duplicación del visor: las claves hermanas de ModelViewer y SpeciesQR coincidían con el ID de especie y una actualización de estado generaba tres secciones 3D. Se diferenciaron como model-ID y qr-ID. La prueba `scripts/check-model-duplicates.mjs` falló antes (3 secciones en vez de 1) y pasó después durante cambios repetidos de la ficha. La prueba de vista rápida confirma también ausencia de la galería pública.

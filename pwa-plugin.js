@@ -12,7 +12,7 @@ export function pwaPlugin() {
     generateBundle(_options, bundle) {
       onlineOnly.clear();
       for (const item of Object.values(bundle)) {
-        if (item.type === 'chunk' && Object.keys(item.modules).some(id => /[/\\]@google[/\\]model-viewer[/\\]/.test(id))) onlineOnly.add(item.fileName);
+        if (item.type === 'chunk' && Object.keys(item.modules).some(id => /[/\\]@google[/\\]model-viewer[/\\]|[/\\]three[/\\]|[/\\]campus-scene\.js$/.test(id))) onlineOnly.add(item.fileName);
       }
     },
     async closeBundle() {

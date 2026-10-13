@@ -1,0 +1,77 @@
+.home-layout{--campus-white:#fffdf0}
+.home-layout>main.shell{width:100%;max-width:none}
+.home-layout>.site-header{position:absolute;inset:0 0 auto;z-index:4;background:linear-gradient(#0b201de6,#0b201d55,transparent);border-top:0;color:var(--campus-white)}
+.home-layout .site-header .brand,.home-layout .site-header .primary-links a,.home-layout .site-header .tool-links a,.home-layout .site-header .profile-link,.home-layout .site-header .session-exit{color:var(--campus-white)}
+.home-layout .site-header .tools-bar{background:transparent;border-color:#ffffff25}
+.home-layout .site-header .access-link{background:#fffdf012;border-color:#ffffff66;color:var(--campus-white)}
+.home-layout .site-header .primary-links a.active,.home-layout .site-header .tool-links a.active{background:#ffffff20;color:var(--campus-white)}
+.home-layout .site-header a:hover,.home-layout .site-header button:hover{color:var(--campus-white);background-color:#ffffff18}
+.home-layout>.local-banner{position:absolute;top:145px;left:0;right:0;z-index:4;background:#172e27cc;color:#fffdf0;border:0;font-size:11px}
+.campus-welcome{position:relative;isolation:isolate;min-height:820px;min-height:max(680px,100svh);display:grid;place-items:center;overflow:hidden;padding:180px 30px 120px!important;background:#183827;animation:none!important;color:var(--campus-white)}
+.campus-photo,.campus-canvas,.campus-shade{position:absolute;inset:0;width:100%;height:100%;z-index:-3}
+.campus-photo{object-fit:cover;object-position:center;transform:scale(1.08)}
+.campus-canvas{opacity:0;transition:opacity 450ms ease;pointer-events:none}
+.campus-canvas.is-ready{opacity:1}
+.campus-canvas canvas{display:block;width:100%;height:100%}
+.campus-shade{z-index:-1;background:linear-gradient(180deg,#061b2430 0%,#071e215e 32%,#071e2166 65%,#061b24ad 100%)}
+.campus-copy{text-align:center;max-width:1100px}
+.campus-kicker{font-size:11px;font-weight:600;letter-spacing:.28em;margin:0 0 26px;color:#fffde0}
+.campus-copy h1{font-size:clamp(40px,5.3vw,82px);font-weight:400;letter-spacing:-.035em;line-height:1.08;margin:0;text-shadow:0 2px 25px #05170c50}
+.campus-copy h1 em{color:inherit;font-style:italic;font-weight:400}
+.campus-intro{font-size:clamp(15px,1.3vw,18px);margin:26px 0 30px;color:#fffdef}
+.campus-explore{display:inline-flex;align-items:center;gap:32px;padding:17px 25px;min-height:52px;color:#274537;background:#fffdeb;border:1px solid #fffdeb;font-size:12px;font-weight:650;letter-spacing:.09em;text-transform:uppercase;text-decoration:none;transition:background-color 180ms ease,transform 160ms ease}
+.campus-explore:hover{background:white}.campus-explore:active{transform:scale(.98)}
+.campus-bottom{position:absolute;bottom:30px;left:48px;right:48px;display:flex;align-items:end;justify-content:space-between;gap:24px}
+.campus-scroll{display:flex;align-items:center;gap:16px;text-decoration:none;text-transform:uppercase;font-size:10px;letter-spacing:.18em;min-height:44px}
+.campus-scroll span{font-size:26px;font-weight:300}
+.campus-credit{font-size:10px;line-height:1.7;text-align:right;max-width:340px;margin:0;color:#fffde0}
+.campus-motion{position:absolute;right:48px;bottom:95px;border:1px solid #ffffff70;border-radius:30px;background:#10291c60;color:#fffdec;font-size:10px;padding:8px 13px;min-height:36px}
+.campus-welcome a:focus-visible,.campus-welcome button:focus-visible{outline:3px solid #fff3a8;outline-offset:6px}
+.home-collection{padding-block:75px!important;scroll-margin-top:20px}
+@media(max-width:700px){
+ .home-layout .site-header .shell{width:calc(100% - 36px)}
+ .home-layout .site-header .primary-bar{gap:8px}
+ .home-layout .site-header .brand{font-size:22px;gap:7px}
+ .home-layout .site-header .brand-mark{width:30px;height:30px}
+ .home-layout .site-header .access-link{font-size:11px;padding:9px 10px;gap:8px}
+ .home-layout .site-header .access-link .ui-icon{width:14px}
+ .home-layout .site-header .tools-inner{flex-wrap:nowrap;gap:8px;padding-bottom:0}
+ .home-layout .site-header .tool-links{width:auto;flex:1;scrollbar-width:none}
+ .home-layout .site-header .tool-links::-webkit-scrollbar{display:none}
+ .home-layout .site-header .primary-links{padding-bottom:3px}
+ .campus-welcome{min-height:max(800px,100svh);padding:235px 24px 155px!important}
+ .campus-kicker{font-size:9px;letter-spacing:.16em;max-width:240px;margin:0 auto 24px}
+ .campus-copy h1{font-size:clamp(36px,9vw,56px)}
+ .campus-intro{max-width:290px;margin:24px auto;font-size:14px}
+ .campus-bottom{left:24px;right:24px;bottom:22px;display:block}
+ .campus-credit{text-align:left;margin-top:10px;font-size:9px}
+ .campus-motion{right:24px;bottom:122px}
+ .home-layout>.local-banner{top:180px}
+ .home-collection{padding-block:42px!important}
+}
+@media(prefers-reduced-motion:reduce){.campus-canvas{transition:none}.campus-explore{transition:none}.campus-explore:active{transform:none}}
+
+.home-layout .site-header .install-app>.button{color:#fffdf0;border-color:#ffffff66}
+.home-layout .site-header .profile-link{background:#ffffff18;border-color:#ffffff40}
+.home-layout .site-header .tool-links .ui-icon{color:#dce9cb}
+
+.campus-copy{transition:opacity 240ms ease,transform 320ms cubic-bezier(.22,1,.36,1)}
+.campus-copy.is-leaving{opacity:0;transform:translateY(-12px);pointer-events:none}
+
+.collection-transition--depart .campus-photo{animation:campus-photo-approach 360ms ease-out both}
+.collection-transition--depart .campus-canvas{animation:campus-canvas-approach 360ms ease-out both}
+.collection-transition--depart .campus-bottom,.collection-transition--depart .campus-motion{opacity:0;transition:opacity 200ms ease}
+.campus-route-bridge{position:fixed;inset:0;z-index:1000;pointer-events:none;overflow:hidden;background:#183827;animation:campus-slide-away 560ms cubic-bezier(.65,0,.2,1) both}
+.campus-route-bridge img{width:100%;height:100%;object-fit:cover;transform:scale(1.15)}
+.campus-route-shade{position:absolute;inset:0;background:linear-gradient(180deg,#061b2430 0%,#071e215e 32%,#071e2166 65%,#061b24ad 100%)}
+.collection-transition--arrive main{animation:collection-rise 560ms cubic-bezier(.22,1,.36,1) both}
+.plant-card.collection-card-enter{animation:collection-card-enter 320ms cubic-bezier(.22,1,.36,1) both}
+@keyframes campus-photo-approach{from{transform:scale(1.08)}to{transform:scale(1.15)}}
+@keyframes campus-canvas-approach{from{transform:scale(1)}to{transform:scale(1.065)}}
+@keyframes campus-slide-away{from{transform:translateY(0)}to{transform:translateY(-100%)}}
+@keyframes collection-rise{from{transform:translateY(40px)}to{transform:translateY(0)}}
+@keyframes collection-card-enter{from{opacity:.35;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){
+ .campus-route-bridge{display:none}.campus-copy{transition:none}.campus-copy.is-leaving{opacity:1;transform:none}
+ .collection-transition--depart .campus-photo,.collection-transition--depart .campus-canvas,.collection-transition--arrive main,.plant-card.collection-card-enter{animation:none}
+}
