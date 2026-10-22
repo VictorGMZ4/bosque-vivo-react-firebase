@@ -43,3 +43,33 @@ El inicio `/` monta `CampusWelcome` sin consultar ni renderizar el catálogo. `/
 `SpeciesQuickView` utiliza el registro ya cargado por el catálogo. `PhotoGallery` presenta los recursos ya autorizados de la ficha; `StorageImage` mantiene el acceso a Storage y el respaldo cuando falta una fotografía. `BotanicalDialog` monta un diálogo nativo mediante portal para evitar conflictos con animaciones de la página, conserva el foco y restaura el desplazamiento al cerrar. No hay nuevos endpoints ni permisos.
 
 La galería interactiva está desactivada por decisión del usuario (2026-10-13); la administración conserva los registros y controles de fotografías. ModelViewer y SpeciesQR usan claves diferenciadas entre hermanos para evitar acumulación de nodos al actualizar la ficha.
+
+### Navegación y exploración visual (2026-10-20)
+
+`Layout` pasa `welcome` a `SiteHeader` y omite `SiteFooter` únicamente en `/`. La marca conserva nombre y subtítulo con `brand-flower.svg` como símbolo. `SiteFooter` se comparte entre las rutas interiores; no contiene datos de contacto inventados.
+
+`Catalog` filtra los registros existentes en memoria: `candidates` aplica todos los filtros excepto tipo, alimenta sus contadores, y `matches` aplica el tipo seleccionado. La exploración aleatoria usa `matches`, sin consultas adicionales. `LoadingState` contiene esqueletos no interactivos; un reintento reinicia la consulta cuando falla. Las respuestas de componentes desmontados se descartan.
+
+`BotanicalDialog` recibe una dirección de origen decorativa para la entrada/salida de la vista rápida, mantiene el diálogo modal hasta completar el cierre y limpia su temporizador. Los enlaces a ficha siguen navegando inmediatamente. `refresh.css` aplica transiciones breves, navegación de ficha fija y márgenes para todos los destinos. Se respeta movimiento reducido. No hay nuevos permisos, persistencia o llamadas de escritura.
+
+### Tarjeta QR para pantalla y papel
+
+`SpeciesQR` conserva `speciesPublicUrl` y el generador qrcode. La composición `Label` se renderiza con los mismos datos tanto en `.qr-preview` como en el portal `.qr-print-sheet`. Las imágenes del campus y las marcas se sirven desde `public/images`; `unipaz-logo.png` es el archivo original aportado por el usuario. La capa verde y el fondo beige incluyen SVG decorativos para conservar contraste incluso al imprimir sin fondos.
+
+`species-qr.css` sustituye los antiguos estilos de QR de `welcome-qr.css`, mantiene códigos negros sobre blanco y usa un contenedor adaptable para la versión móvil. El portal no pertenece al contenedor móvil y siempre imprime horizontal en A4. La altura es automática para no truncar nombres. Un IntersectionObserver dispara solo la entrada de la tarjeta y se libera al desmontarse; impresión y movimiento reducido omiten animaciones. Las descargas PNG/SVG siguen siendo del código individual, mientras que Imprimir permite obtener la tarjeta completa como PDF.
+
+El pie de página de las páginas interiores enlaza a `/sobre-el-proyecto/`, que contiene la presentación aprobada del proyecto. Sus iconos sociales son informativos y no tienen destinos configurados. Estilos encapsulados en `src/site-footer.css`; decoraciones SVG sin dependencias adicionales.
+
+### Hotspots 3D manuales
+
+`ModelViewer` comparte renderizado y captura de posición/normal con `ModelEditor`. La colocación usa `positionAndNormalFromPoint` de model-viewer; los botones son slots hotspot anclados a coordenadas del modelo, con lista HTML alternativa para consultar los textos. Referencia: https://modelviewer.dev/examples/annotations/. Se usa la pose estática del modelo; no se reproduce animación esquelética.
+
+`species.model_hotspots`: lista de hasta 30 objetos `{id,title,description,position:[x,y,z],normal:[x,y,z]}`. Validación estricta en `functions/domain.js`; título 100, descripción 2000, vectores finitos y normal unitaria. `ModelEditor` valida GLB autocontenido y bloquea el guardado durante la comprobación. Reemplazo y retirada requieren confirmación y limpian puntos.
+
+Las propuestas conservan `model:{path,credit,hotspots}` separado de `data`, bajo `submissions/{id}/models/*.glb`. Storage solo permite creación por profesor/admin propietario de borrador, sin sobrescritura, y lectura del autor o admin. `submitDraft` valida ruta, tamaño, MIME y contenido GLB; `reviewSpecies` copia el archivo a `species/{id}/models/` y publica los puntos en la misma transacción que la ficha. Rechazar/corregir conserva el modelo propuesto. Solo backend escribe datos de especies.
+
+### Entrada desde códigos QR
+Los códigos nuevos abren `/especies/:id/explorar/`, un pasaporte botánico público sin navegación global. Reutiliza los permisos de lectura, StorageImage y ModelViewer (incluidos los puntos guardados). La ficha completa sigue en `/especies/:id/`. El visor se monta al expandir su sección y carga por solicitud; la animación se pausa durante la exploración 3D. Los estilos están delimitados a passport-layout/species-passport.
+
+### Decoración exclusiva del catálogo
+CatalogBotanicals monta una capa absoluta limitada a los márgenes. El contenido y los filtros conservan prioridad visual e interactiva. Se muestran hasta diez motivos según la altura disponible; no se crean filas vacías para alojarlos. Los WebP con transparencia residen en public/images/catalog-botanicals-1.webp y catalog-botanicals-2.webp.

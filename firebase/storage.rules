@@ -9,6 +9,11 @@ service firebase.storage {
    allow create: if resource == null && teacher() && firestore.get(/databases/(default)/documents/submissions/$(id)).data.owner_id == request.auth.uid && firestore.get(/databases/(default)/documents/submissions/$(id)).data.status == 'draft' && request.resource.size <= 8 * 1024 * 1024 && request.resource.contentType.matches('image/(jpeg|png|webp)') && file.matches('[a-zA-Z0-9_-]+[.](jpg|png|webp)');
    allow update, delete: if false;
   }
+  match /submissions/{id}/models/{file} {
+   allow read: if request.auth != null && (admin() || firestore.get(/databases/(default)/documents/submissions/$(id)).data.owner_id == request.auth.uid);
+   allow create: if resource == null && teacher() && firestore.get(/databases/(default)/documents/submissions/$(id)).data.owner_id == request.auth.uid && firestore.get(/databases/(default)/documents/submissions/$(id)).data.status == 'draft' && request.resource.size <= 30 * 1024 * 1024 && request.resource.contentType == 'model/gltf-binary' && file.matches('[a-zA-Z0-9_-]+[.]glb');
+   allow update, delete: if false;
+  }
   match /species/{id}/photos/{file} {
    allow read: if admin() || published(id);
    allow create, update: if admin() && request.resource.size <= 8 * 1024 * 1024

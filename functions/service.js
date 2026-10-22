@@ -2,6 +2,7 @@ import {FieldValue} from 'firebase-admin/firestore';
 import {db} from './firebase.js';
 import {requireRole} from './access.js';
 import {fail,requireAdmin,keyFor,validateSpecies,validateSpecimen,validatePhoto,validateId,validatePath} from './domain.js';
+import {checkModel} from './model-assets.js';
 const collections={species:'species',specimen:'specimens',photo:'photos'};
 export async function mutateData(auth,input){
  await requireRole(auth,['admin']);
@@ -12,9 +13,11 @@ export async function mutateData(auth,input){
  const data=deleting?null:entity==='species'?validateSpecies(input.data):entity==='specimen'?validateSpecimen(input.data):null;
  if(entity==='species'&&data)validatePath(data.photo,id);
  if(data?.model_3d&&!new RegExp(`^species/${id}/models/[a-zA-Z0-9_-]+\\.glb$`).test(data.model_3d))fail('El modelo debe pertenecer a esta especie.');
+ if(data?.model_3d)await checkModel(data.model_3d);
  await db.runTransaction(async tx=>{
   await requireRole(auth,['admin'],tx);
   const snapshot=await tx.get(ref),old=snapshot.data();
+  if(entity==='species'&&data&&data.model_3d!==undefined&&data.model_3d!==(old?.model_3d||'')&&data.model_hotspots===undefined)data.model_hotspots=[];
   if(!creating&&!snapshot.exists)fail('El registro ya no existe.','not-found');
   const parentId=entity==='species'?id:creating?validateId(input.species_id):old.species_id;
   const parentRef=db.collection('species').doc(parentId);

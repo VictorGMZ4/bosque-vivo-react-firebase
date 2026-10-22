@@ -137,3 +137,119 @@ Se añadieron 16 px de separación vertical entre Guardar especie y Guardar sin 
 ## 2026-10-13 — Retiro de galería y corrección del visor duplicado
 
 Se retiró la galería pública interactiva; se conserva Vista rápida y la gestión administrativa de fotografías sin borrar archivos. Se reprodujo la duplicación del visor: las claves hermanas de ModelViewer y SpeciesQR coincidían con el ID de especie y una actualización de estado generaba tres secciones 3D. Se diferenciaron como model-ID y qr-ID. La prueba `scripts/check-model-duplicates.mjs` falló antes (3 secciones en vez de 1) y pasó después durante cambios repetidos de la ficha. La prueba de vista rápida confirma también ausencia de la galería pública.
+
+## 2026-10-20 — Bienvenida y exploración del catálogo
+
+- Bloque autorizado por el usuario: el inicio conserva la marca con la flor, el campus, mensaje, créditos y accesos al catálogo; no monta las barras de navegación ni el pie de página. Las páginas interiores mantienen navegación según rol y estrenan pie con propósito, enlaces, referencia UNIPAZ y contacto pendiente.
+- Se incorporó un símbolo SVG sin palabras a la marca existente, con nombre y subtítulo conservados. No se añadieron dependencias.
+- Los filtros por tipo son botones con estado seleccionado y contadores que respetan búsqueda, familia, género, fotografía y modelo. Descubre una especie selecciona entre los resultados actuales y queda deshabilitado si no hay resultados.
+- Esqueletos de carga en catálogo y ficha; los errores del catálogo ofrecen reintento. Navegación fija por descripción, morfología, ecología, usos, precauciones, fuentes y secciones existentes; destinos con margen para evitar que sus títulos queden cubiertos.
+- Vista rápida con apertura desde la dirección de la tarjeta y salida breve, conservación del foco, Escape y temporizadores liberados. Fichas con entrada suave de texto y fotografía. Movimiento reducido omite animaciones y desplazamiento suave.
+- Validación: 19 pruebas unitarias correctas y compilación Vite correcta. `scripts/check-refresh-ui.mjs` verifica bienvenida, logo, carga, filtros, selección aleatoria filtrada, navegación, QR sin solapamiento, pie, cierre/foco, ancho móvil, movimiento reducido, rol admin y reintento con registros sintéticos. Pasaron las regresiones `check-model-duplicates.mjs` y `check-collection-transition.mjs`. Capturas inspeccionadas y revisión independiente aplicada.
+- Entrega local; sin publicación, escrituras en producción ni cambios en backend o reglas. Hotspots y rediseño de QR siguen pendientes.
+
+## 2026-10-20 — Entrada animada con Anime.js
+
+- Se integró la variante de hibisco aprobada por el usuario con Anime.js 4.5.0, fijado en package.json y pnpm-lock.yaml. El módulo de animación se carga bajo demanda, sin CDN, video o dependencias de las carpetas de demostración.
+- Al abrir inicialmente `/` se presenta la flor sobre blanco durante aproximadamente 3 segundos, seguida de una breve brisa y un desvanecimiento de 260 ms hacia el campus. La bienvenida se monta en segundo plano. Al navegar de vuelta desde el catálogo no se repite; una recarga del inicio sí la reproduce. Los accesos directos a fichas y otras rutas no muestran la entrada.
+- Omitir y Escape permiten continuar. El contenido de fondo permanece inert durante la entrada y recupera interacción, desplazamiento y foco en el título del campus al terminar. Movimiento reducido omite la secuencia. Fallos de importación abren la bienvenida y existe un límite de espera de 5 segundos. Temporizadores y animaciones se liberan al desmontar.
+- Validación: 19 pruebas unitarias y compilación correctas. `scripts/check-intro-ui.mjs` pasó etapas SVG, finalización, desbloqueo, omisión, Escape, movimiento reducido, móvil, acceso directo, regreso sin repetición y fallo simulado de importación. Revisión independiente sin hallazgos importantes. Demostraciones y producción sin cambios.
+
+## 2026-10-20 — Retiro de la pantalla de carga
+
+Por petición del usuario se retiró toda la entrada de hibisco de la aplicación: componente, SVG, estilos, módulo de animación, prueba específica y dependencia Anime.js. El inicio vuelve a mostrar directamente el campus. Se mantienen las demostraciones independientes fuera del proyecto y el resto de mejoras autorizadas. README y arquitectura reflejan el estado actual. El rediseño del QR queda pendiente de referencias y definición del usuario; no se modificó en este cambio.
+
+## 2026-10-21 — Tarjeta QR del campus
+
+- Se implementó la referencia aprobada para pantalla e impresión: fotografía del campus con capa verde, marca Flora Viva, nombre común, nombre científico y familia, junto a un panel beige con QR, enlace al sitio y el archivo de logo UNIPAZ aportado por el usuario. Se conserva el crédito de Paolo Forero Vásquez.
+- Una sola composición `Label` alimenta la vista y el portal de impresión. La tarjeta es horizontal en escritorio y papel; se apila en móviles para conservar legibilidad. La altura crece cuando los nombres son largos. Impresión en A4 con tarjeta de 180 mm de ancho, sin interfaz ni animaciones.
+- Entrada de tarjeta de 280 ms al entrar en pantalla, sin animaciones continuas sobre el código. Movimiento reducido desactiva la entrada. No se añadieron bibliotecas ni cambios de permisos.
+- Se conserva la generación QR canónica, negro sobre blanco, margen de cuatro módulos y corrección M. El código apunta a la ficha; el enlace de texto apunta al sitio. PNG y SVG continúan descargando el código individual; la tarjeta se imprime o guarda como PDF desde el diálogo del navegador.
+- Validación específica: `check-qr-card-ui.mjs` pasó contenido dinámico, imágenes, enlace, aislamiento de impresión, móvil, nombres largos y movimiento reducido con registros simulados. Los PDFs normal, sin fondos y con nombre largo tienen una página y se revisaron visualmente. Un lector independiente decodificó la captura y las tres versiones PDF rasterizadas hacia la ruta correcta de especie. No se publicaron cambios ni se escribieron datos de producción.
+
+## 2026-10-21 — Pie de página y presentación del proyecto
+
+- Diseño aprobado: fondo verde bosque, textos crema, tres columnas, ramas SVG decorativas, marca Flora Viva y logo UNIPAZ en blanco. Adaptación vertical en móvil.
+- Enlaces Inicio, Especies y Sobre el proyecto. Nueva ruta pública /sobre-el-proyecto/ con los tres párrafos aprobados por el usuario y la frase de conservación.
+- Instagram, Facebook y YouTube son iconos informativos sin enlace ni botón; etiqueta Próximamente. Sin contactos inventados. El inicio sigue sin pie de página.
+- Validación: build Vite correcto; comprobación local con Playwright de contenido, enlaces, redes inertes, exclusión del inicio y ausencia de desbordamiento a 390/768/1024 px. Capturas de escritorio y móvil inspeccionadas en work/footer-preview. Cambios solo locales, sin despliegue.
+
+### 2026-10-21 — Laterales botánicos del pie de página
+
+- Sustituidas las ramas geométricas por una imagen botánica transparente basada en la maqueta aprobada: acuarela desde el borde inferior izquierdo y follaje verde desde el superior derecho, parcialmente recortados.
+- Recurso WebP local de 138.576 bytes, carga diferida, sin interacción y excluido de accesibilidad por ser decorativo. El contenido permanece como HTML seleccionable y enlaces reales.
+- Ajustado el espacio de las columnas; en móvil se atenúan los laterales y se suaviza su recorte. Sin cambios en la bienvenida ni publicación en Vercel.
+- Validación: compilación Vite correcta; Playwright verifica la ruta informativa, redes sin enlaces, exclusión en inicio y ausencia de desbordamiento a 390/768/1024 px; capturas de escritorio y móvil revisadas visualmente.
+
+## 2026-10-21 — Editor manual de puntos informativos 3D
+
+- Admin: añadir puntos sobre la superficie GLB mediante raycast, títulos y descripciones, seleccionar, recolocar y eliminar; persistencia en model_hotspots. Cambiar o retirar el modelo limpia sus puntos previa confirmación. Límite 30 puntos; se impide guardar durante la validación del archivo.
+- Profesor: modelo y puntos en propuestas privadas; subida solo a su borrador y sin sobrescritura, inspección por admin, rechazo/corrección y publicación conjunta del modelo y puntos al aprobar.
+- Visitantes: puntos numerados y lista alternativa para consultar textos, sin controles de edición. Carga diferida y limpieza de object URLs preservadas; no se añaden textos botánicos automáticamente.
+- Se incorporó el modelo existente del girasol (especie local 8) al emulador, que todavía no lo tenía. No se añadieron puntos de prueba a esa ficha.
+- Validación: 22 pruebas unitarias, 12 pruebas de integración con emuladores, prueba de navegador con GLB real (colocación, edición, recolocación, eliminación y móvil), guardado real mediante callable en ficha temporal con modelo de girasol y recuperación tras recarga. Registros temporales limpiados. Build correcto y diff sin errores de espacio.
+- Revisión independiente detectó una carrera de guardado durante validación GLB; corregida en ambos formularios, con prueba de demora artificial de 900 ms. Comprobación adicional de formulario de ejemplares tras ajustar su guardado.
+- Pendiente solo publicación autorizada: frontend, Functions y Storage rules. No se desplegó a Firebase ni Vercel.
+
+### 2026-10-21 — Viñetas dentro del visor 3D
+
+- Al seleccionar un punto, título y descripción aparecen en una viñeta superpuesta dentro del visor, conectada al marcador. Sigue la proyección del punto durante giro/zoom, se mantiene dentro del visor, admite texto largo con desplazamiento y cierre mediante botón o Escape.
+- Marcador visual reducido de 36 a 23 px, conservando objetivo de pulsación de 44 px. La ficha pública ya no muestra el panel informativo exterior; la lista alternativa permite seleccionar puntos y el formulario de edición sigue separado del modelo.
+- Validación: prueba unitaria de posicionamiento en bordes y móvil; navegador con GLB real, tamaño del marcador, ausencia del panel público exterior, contención y cierre de viñeta en móvil; captura revisada. Build correcto. Solo cambios locales.
+
+### 2026-10-21 — Logo con contorno y marcadores discretos
+
+- Sustituida la flor en cabecera, pie y tarjetas QR (pantalla/impresión) por la última imagen suministrada por el usuario. Se conserva transparencia y contorno claro; se recortó el margen transparente y optimizó a WebP de 55.038 bytes, sin regenerar el dibujo.
+- Marcadores 3D reducidos de 23 a 16 px y sin números visibles. Se conservan el área de pulsación de 44 px, etiquetas accesibles, selección por lista y viñetas.
+- Validación: build correcto; pruebas de navegador del pie responsive y hotspots con GLB real pasan, incluyendo tamaño 16 px, ausencia de números y apertura/cierre de viñetas. Cambios locales, sin despliegue.
+
+### 2026-10-21 — Icono de escaneo QR
+
+- Redibujado el icono SVG de teléfono y mano siguiendo la referencia del usuario: contornos redondeados, señal de toque y mano con relleno del panel para evitar líneas del teléfono atravesándola. Vector nítido compartido por pantalla e impresión, sin dependencias.
+- Prueba previa a publicación: build correcto; check-qr-card-ui pasa con escritorio, móvil, nombres largos, imágenes y aislamiento de impresión. Captura de tarjeta revisada. Sin despliegue.
+
+### 2026-10-21 — Retirada del icono QR
+
+- Por petición del usuario se elimina el icono de teléfono/mano de la tarjeta compartida para pantalla e impresión, junto con sus estilos. Se conserva el texto de escaneo, el código y los demás elementos.
+- Validación: build correcto. Cambio local, sin despliegue.
+
+## 2026-10-21 — Pasaporte botánico al escanear QR
+- Integrado el diseño aprobado en `/especies/:id/explorar/`: tarjeta aislada, sin cabecera/pie general, acabado holográfico y oscilación de 7 px. Pausa manual, al abrir 3D, al ocultar pestaña y respeto a movimiento reducido.
+- Información real de Firestore, foto y autoría, primer párrafo de descripción, familia y hábito; avisos de demostración/borrador. Sin altura inventada ni datos fijos del prototipo.
+- Modelo opcional reutiliza ModelViewer y sus puntos informativos. Carga por solicitud. Enlace a ficha completa conserva `/especies/:id/`.
+- Los nuevos QR de pantalla, impresión y descarga usan `speciesExploreUrl`; se conserva `speciesPublicUrl` para direcciones completas. No se desplegó a Vercel.
+- Validación: pnpm test (24/24), pnpm build correcto (advertencias existentes de tamaño de chunks); revisión independiente sin hallazgos materiales. Edge/Playwright con emuladores: visitante anónimo, datos y fotografía reales del girasol, pausa, carga GLB, móvil 390 px sin desbordamiento, navegación a ficha completa, especie inexistente y movimiento reducido. Capturas inspeccionadas; pruebas locales en work/check-passport.mjs.
+
+## 2026-10-21 — Plantas laterales del catálogo y carga directa del pasaporte
+- CatalogBotanicals muestra hasta diez ilustraciones alternadas en los márgenes, según altura real del catálogo. Entrada única con IntersectionObserver; ResizeObserver adapta distribución al filtrar/redimensionar. Sin eventos de puntero, sin cubrir contenido, sin alargar artificialmente la página. Móvil con recortes menores; movimiento reducido sin transición. Solo se monta en Catalog.
+- Activos preparados con image_gen integrado (dos tiras transparentes de cinco referencias) y optimizados a WebP: public/images/catalog-botanicals-1.webp y catalog-botanicals-2.webp. Son adaptaciones decorativas de las imágenes entregadas, no fotografías identificativas de especies.
+- ModelViewer acepta autoLoad=false por defecto; Explore lo activa al montar el visor después de abrir «Explora la especie en 3D». Se elimina el segundo clic solo en ese recorrido. Mantiene estados de carga/error, reintento y puntos existentes.
+- Validación real: pnpm build correcto; Edge/Playwright: diez decoraciones, revelado progresivo, márgenes sin superposición, búsqueda vacía, móvil 390 px sin desbordamiento, aislamiento de rutas, movimiento reducido. Prueba del pasaporte valida ausencia del segundo botón, GLB cargado, navegación completa y errores. Capturas revisadas en work/catalog-botanicals-*.png. Sin despliegue.
+
+## 2026-10-21 — Ajuste de bordes y fichas móviles del catálogo
+- Se suavizan los extremos de las ilustraciones con máscaras CSS, ocultando los fragmentos periféricos de las tiras y evitando cortes rectos visibles. Inclinaciones individuales de 8–14 grados, conservadas con movimiento reducido.
+- En móvil se reserva más margen lateral: contenido 44 px más estrecho, fichas con relleno menor y controles conservados. Una columna hasta 600 px para mantener legibilidad. Sin cambios en la ficha del QR.
+- Validación: compilación correcta; Playwright comprueba revelado, filtros, ausencia de solapamiento y desbordamiento móvil, aislamiento y movimiento reducido. Captura móvil revisada. Sin publicación.
+
+## 2026-10-22 — Composición natural de los laterales
+- Aplicada la muestra revisada: cuatro imágenes separadas (rama y palma desde la derecha, variegada y ave del paraíso desde la izquierda). La base de los tallos queda fuera del viewport; orientación individual. Se reemplaza la tira de diez motivos por estas cuatro composiciones para evitar fragmentos vecinos.
+- Eliminadas máscaras, difuminación y opacidad decorativa. Archivos en public/images/catalog-{branch,palm,variegated,bird}.webp; derivados con image_gen integrado y optimizados conservando alfa. La palma es una adaptación de frondas completas de la referencia, no un recorte rectangular.
+- Revelado por traslación de la imagen observando un contenedor fijo, corregido después de que la prueba detectara que observar la misma imagen desplazada impedía su entrada. Mantiene preferencias de movimiento reducido, márgenes móviles y aislamiento del catálogo.
+- Verificado: compilación correcta; prueba Edge pasa con cuatro motivos, aparición al bajar, no solapamiento con contenido ni desbordamiento móvil, filtros y movimiento reducido. Captura de escritorio revisada. No publicado.
+
+## 2026-10-22 — Escala de plantas laterales en móvil
+- Las cuatro ilustraciones usan el mismo ancho en píxeles en escritorio y móvil (253/265/170/138), en lugar de reducirse con el margen. En pantallas estrechas cambia su anclaje exterior para mostrar fragmentos grandes conservando el espacio del contenido y la base del tallo fuera de pantalla.
+- Verificado con Edge/Playwright: aparición al desplazarse, cuatro motivos, filtros, ausencia de desbordamiento horizontal móvil y movimiento reducido. Sin despliegue.
+
+## 2026-10-22 — Carta simplificada y diez ilustraciones del catálogo
+- El visor de la carta usa presentación compacta: instrucciones accesibles sin texto visible, sin lista externa de puntos y crédito plegable. Conserva carga automática, marcadores y viñetas. La ficha completa y el editor mantienen sus controles.
+- Se completan seis ilustraciones individuales (enredadera, platanera, rama, monstera, caladio y heliconia), derivadas de referencias del usuario con fondo transparente y optimizadas a WebP. Diez motivos distribuidos según altura disponible, con aparición al desplazarse, orientación por tallo y escala compartida móvil/escritorio; sin máscaras difuminadas.
+- Verificación: build correcto (advertencias de tamaño de bundles/importaciones existentes); navegador Edge: diez motivos, aparición progresiva, filtros, movimiento reducido, ausencia de desbordamiento móvil y exclusividad del catálogo. Carta: carga 3D, dos puntos conservados, créditos plegados, navegación y vista móvil. Revisión visual de capturas escritorio/móvil.
+- Cambios locales; sin despliegue ni modificaciones de datos de especies.
+
+## 2026-10-22 — Preparación de publicación autorizada
+- Dominio floraviva-unipaz.vercel.app conectado al proyecto existente bosque-vivo-react-firebase; Vercel confirma configuración válida. floraviva.vercel.app no disponible.
+- Verificación previa: 24 pruebas unitarias y 12 de integración en emuladores correctas; build Vite correcto. Revisión estática adicional sin bloqueos críticos/importantes.
+- Actualización del backend Firebase iniciada antes de publicar el cliente: las nuevas escrituras requieren model_hotspots y reglas de modelos de propuestas.
+- URL pública de QR pendiente de verificación por correo requerida por Vercel. Se conserva el dominio anterior.
+- Despliegue de reglas Storage confirmado. El primer despliegue de funciones terminó con timeout; ambas figuran ACTIVE pero workspace conserva la versión anterior, por lo que se reintenta esa función antes de publicar el cliente.

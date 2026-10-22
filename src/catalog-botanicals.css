@@ -1,0 +1,38 @@
+.catalog-page{position:relative;isolation:isolate}.catalog-layout{overflow-x:clip}.catalog-content{position:relative;z-index:1;width:min(1100px,100%);margin-inline:auto}.catalog-content>section{padding:60px 0}
+.catalog-botanicals{position:absolute;inset-block:0;left:calc((100% - 100vw)/2);width:100vw;overflow:hidden;pointer-events:none;z-index:0;user-select:none}
+/* Only the viewport cuts the art. Each plant has its own stem anchor. */
+.catalog-edge{position:absolute;height:470px;width:clamp(18px,calc((100% - min(1100px,calc(100% - 96px)))/2 - 16px),280px);overflow:visible;transition:translate 650ms cubic-bezier(.22,1,.36,1)}
+.catalog-edge.is-left{left:0}.catalog-edge.is-right{right:0}.catalog-edge.is-left img{translate:-300% 0}.catalog-edge.is-right img{translate:300% 0}.catalog-edge.is-visible img{translate:0 0}.catalog-plant{position:absolute;display:block;height:auto;max-width:none;transition:translate 650ms cubic-bezier(.22,1,.36,1)}
+.botanical-branch img{width:110%;right:-12%;top:0;transform:rotate(-6deg);transform-origin:100% 50%}.botanical-palm img{width:115%;right:-15%;top:90px}.botanical-variegated img{width:74%;left:-45%;bottom:60px;transform:rotate(48deg);transform-origin:50% 100%}.botanical-bird img{width:60%;left:-36%;bottom:60px;transform:rotate(43deg);transform-origin:50% 100%}
+@media(max-width:1100px){.catalog-edge{width:20px}}
+@media(max-width:768px){.catalog-content{width:calc(100% - 44px)}.catalog-content>section{padding:36px 0}.catalog-edge{width:36px;height:290px}.botanical-branch img{top:45px}.catalog-content .card-copy{padding:16px}.catalog-content .card-copy h3{font-size:23px}.catalog-content .card-image{aspect-ratio:1.35}.catalog-content .section-title{gap:12px}.catalog-content .filters{padding:16px;grid-template-columns:1fr}.catalog-content .filters>label:first-child,.catalog-content .filters>.button{grid-column:auto}.catalog-content .discovery-bar{padding:20px}.catalog-content .habit-filters{gap:7px}.catalog-content .habit-chip{padding:9px 12px;gap:7px}.catalog-content .pagination{flex-wrap:wrap;gap:10px}}
+@media(min-width:481px) and (max-width:600px){.catalog-content .cards{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.catalog-edge,.catalog-edge img{translate:0 0!important;transition:none}}
+
+/* La escala de cada ilustración se conserva entre escritorio y móvil. */
+.botanical-branch img{width:253px}
+.botanical-palm img{width:265px}
+.botanical-variegated img{width:170px}
+.botanical-bird img{width:138px}
+@media(max-width:1100px){
+ .catalog-edge{width:36px;height:470px}
+ .botanical-branch img{right:-213px}
+ .botanical-palm img{right:-221px}
+ .botanical-variegated img{left:-230px}
+ .botanical-bird img{left:-200px}
+}
+/* Tallos anclados fuera del borde; contornos completos, sin máscaras. */
+.botanical-vine img{width:180px;left:-90px;top:10px;transform:rotate(-18deg);transform-origin:50% 0}
+.botanical-banana img{width:200px;left:-126px;bottom:60px;transform:rotate(38deg);transform-origin:50% 100%}
+.botanical-twig img{width:180px;right:-110px;bottom:60px;transform:rotate(-42deg);transform-origin:50% 100%}
+.botanical-monstera img{width:220px;right:-128px;bottom:60px;transform:rotate(-35deg);transform-origin:50% 100%}
+.botanical-caladium img{width:195px;left:-125px;bottom:60px;transform:rotate(40deg);transform-origin:50% 100%}
+.botanical-heliconia img{width:180px;right:-105px;top:0;transform:rotate(22deg);transform-origin:50% 0}
+@media(max-width:1100px){
+ .botanical-vine img{left:-177px}
+ .botanical-banana img{left:-220px}
+ .botanical-twig img{right:-220px}
+ .botanical-monstera img{right:-240px}
+ .botanical-caladium img{left:-225px}
+ .botanical-heliconia img{right:-164px}
+}

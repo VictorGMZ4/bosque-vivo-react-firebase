@@ -6,7 +6,7 @@ import {habits} from './data';
 
 export function SpeciesQuickView({plant,onClose}){
  const description=plant.description?.trim();
- return <BotanicalDialog labelledBy="quick-species-title" onClose={onClose} className="species-quick-view">
+ return <BotanicalDialog labelledBy="quick-species-title" onClose={onClose} origin={plant.quickOrigin} className="species-quick-view">
   <div className="quick-photo"><StorageImage path={plant.photo} alt={plant.common_name}/></div>
   <div className="quick-content"><p className="eyebrow">UNA MIRADA A LA COLECCIÓN</p><h2 id="quick-species-title">{plant.common_name}</h2>
    <p className="latin">{plant.scientific_name}</p><div className="quick-tags"><span>{plant.family}</span><span>{habits[plant.habit]}</span></div>

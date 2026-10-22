@@ -112,3 +112,20 @@ Referencias oficiales consultadas: [emuladores](https://firebase.google.com/docs
 
 Los formularios de registro y propuesta incluyen plantillas descargables y carga de datos para revisión antes de guardar. Consulta [la guía de importación](docs/IMPORTAR-ESPECIES.md).
 
+## Explorar la colección
+
+La bienvenida muestra la marca y el campus sin barras de navegación ni pie de página. Al entrar al catálogo aparecen filtros visuales con contadores y «Descubre una especie», que elige entre los resultados de la búsqueda. Las fichas incluyen accesos a sus apartados. La vista rápida y las fichas tienen transiciones breves compatibles con movimiento reducido, y la carga muestra estructuras provisionales. El pie de página se presenta en las páginas interiores; sus datos de contacto están pendientes.
+
+Comprobación de interfaz sin escribir en Firebase: `node scripts/check-refresh-ui.mjs` con `PLAYWRIGHT_MODULE` apuntando al módulo Playwright disponible y Microsoft Edge instalado. Los registros utilizados son sintéticos. Pruebas generales: `pnpm test` y `pnpm build`.
+
+## Tarjetas QR
+
+En una ficha publicada, Compartir QR muestra una tarjeta con el campus, los datos botánicos y las marcas de Flora Viva y UNIPAZ. El código abre la ficha de esa especie. La tarjeta conserva el diseño horizontal al imprimir; en móviles se adapta en vertical. Imprimir etiqueta QR permite guardar la tarjeta completa como PDF; Descargar QR y Descargar SVG descargan el código individual. Se conservan los márgenes blancos para escanear y las advertencias de enlaces locales. Prueba de interfaz e impresión con registros sintéticos: `scripts/check-qr-card-ui.mjs`.
+
+## Puntos informativos en modelos 3D
+
+En **Editar especie → Modelo 3D**, carga el GLB o utiliza el existente. Pulsa **Añadir punto informativo**, toca una parte de la planta y completa título y descripción. Puedes seleccionar cada punto, recolocarlo o eliminarlo. Guarda la especie para conservar los cambios. Máximo 30 puntos por modelo; reemplazar o retirar el archivo elimina los puntos anteriores previa confirmación.
+
+Los profesores usan el mismo editor en **Proponer especie**. El modelo y los puntos permanecen privados hasta que administración los revise y apruebe. Las fichas públicas permiten consultar los puntos, sin editarlos. Esta actualización requiere desplegar tanto Functions como las reglas de Storage, además del frontend, cuando se autorice su publicación.
+
+Los QR de las especies abren un pasaporte botánico en `/especies/:id/explorar/`, con información breve, fotografía y modelo 3D opcional. Desde la tarjeta se puede acceder a la ficha completa existente.

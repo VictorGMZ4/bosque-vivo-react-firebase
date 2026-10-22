@@ -1,0 +1,36 @@
+import {createServer} from 'vite';
+import {pathToFileURL} from 'node:url';
+import {mkdirSync,writeFileSync} from 'node:fs';
+import assert from 'node:assert/strict';
+const {chromium}=await import(pathToFileURL(process.env.PLAYWRIGHT_MODULE).href);
+const site='https://bosque-vivo-react-firebase.vercel.app';
+const server=await createServer({define:{'import.meta.env.VITE_PUBLIC_SITE_URL':JSON.stringify(site)},server:{host:'127.0.0.1',port:4198,strictPort:true}});await server.listen();
+const browser=await chromium.launch({channel:'msedge',headless:true});mkdirSync('work/qr-card-preview',{recursive:true});
+try{
+ const page=await browser.newPage({viewport:{width:1440,height:1000}});let long=false;const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/src/auth.jsx*',r=>r.fulfill({contentType:'application/javascript',body:`export const roleLabels={};export const useAuth=()=>({ready:true,user:null,admin:false,role:'student'});export const AuthProvider=({children})=>children;`}));
+ await page.route('**/src/data.js*',r=>r.fulfill({contentType:'application/javascript',body:`const plant={id:'fixture-qr',common_name:${JSON.stringify(long?'Nombre común de prueba de extensión considerable para comprobar la tarjeta':'Sangre toro')},scientific_name:${JSON.stringify(long?'Nombre científico sintético de gran extensión con autoría para la comprobación visual':'Virola sebifera Aubl.')},family:'Myristicaceae',habit:'tree',is_published:true};export const getSpecies=async()=>plant;export const listSpecies=async()=>[plant];export const related=async()=>[];export const habits={tree:'Árbol'};export const normalize=v=>String(v||'');`}));
+ await page.goto('http://127.0.0.1:4198/especies/fixture-qr/');
+ const label=page.locator('.qr-preview .species-qr-label');await label.waitFor();
+ assert.equal(await label.locator('.qr-card-campus').count(),1);
+ assert.equal(await label.getByRole('img',{name:'Instituto Universitario de la Paz · UNIPAZ',exact:true}).count(),1);
+ assert.equal(await label.getByRole('link',{name:'Conoce nuestro sitio web'}).getAttribute('href'),site+'/');
+ await label.scrollIntoViewIfNeeded();await page.waitForTimeout(450);await label.screenshot({path:'work/qr-card-preview/card.png'});
+ await label.locator('.qr-code').screenshot({path:'work/qr-card-preview/qr.png'});
+ const qrSource=await label.locator('.qr-code').getAttribute('src');assert.match(decodeURIComponent(qrSource),/fill="#ffffff"/);
+ writeFileSync('work/qr-card-preview/exported-qr.svg',decodeURIComponent(qrSource.split(',').slice(1).join(',')));
+ const png=await page.getByRole('link',{name:'Descargar QR',exact:true}).getAttribute('href');writeFileSync('work/qr-card-preview/exported-qr.png',Buffer.from(png.split(',')[1],'base64'));
+ for(const image of await label.locator('img').all())assert.equal(await image.evaluate(n=>n.complete&&n.naturalWidth>0),true);
+ await page.emulateMedia({media:'print'});assert.equal(await page.locator('.qr-print-sheet').isVisible(),true);assert.equal(await page.locator('#root').isVisible(),false);
+ await page.pdf({path:'work/qr-card-preview/card.pdf',printBackground:true,preferCSSPageSize:true});
+ await page.pdf({path:'work/qr-card-preview/card-no-backgrounds.pdf',printBackground:false,preferCSSPageSize:true});
+ await page.emulateMedia({media:'screen',reducedMotion:'reduce'});await page.setViewportSize({width:390,height:844});
+ assert.equal(await label.evaluate(n=>getComputedStyle(n).animationName),'none');
+ await label.screenshot({path:'work/qr-card-preview/mobile.png',style:'.detail-nav{visibility:hidden!important}'});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+ long=true;await page.reload();await label.waitFor();await label.screenshot({path:'work/qr-card-preview/long-mobile.png',style:'.detail-nav{visibility:hidden!important}'});assert.equal(await label.evaluate(n=>n.scrollWidth<=n.clientWidth),true);
+ await page.emulateMedia({media:'print'});
+ const printed=page.locator('.qr-print-sheet .species-qr-label');
+ assert.equal(await printed.evaluate(n=>[...n.querySelectorAll('.qr-unipaz-logo,.qr-label-footer')].every(child=>child.getBoundingClientRect().bottom<=n.getBoundingClientRect().bottom)),true,'long names must not clip footer or logo');
+ await page.pdf({path:'work/qr-card-preview/long.pdf',printBackground:true,preferCSSPageSize:true});
+ assert.deepEqual(errors,[]);console.log('PASS QR card campus, dynamic fields, institutional logo, site link, white QR, image loads, print isolation, mobile, long names, reduced motion. PDFs saved for inspection and decoding.');
+}finally{await browser.close();await server.close();}

@@ -4,3 +4,6 @@ export function speciesPublicUrl(id,currentOrigin,configuredOrigin=''){
  if(!['https:','http:'].includes(url.protocol)||url.username||url.password||url.pathname!=='/'||url.search||url.hash)throw Error('VITE_PUBLIC_SITE_URL debe contener solo el origen, por ejemplo https://flora-viva.vercel.app.');
  return new URL(`/especies/${encodeURIComponent(id)}/`,url.origin).href;
 }
+export function speciesExploreUrl(id,currentOrigin,configuredOrigin=''){
+ return speciesPublicUrl(id,currentOrigin,configuredOrigin)+'explorar/';
+}

@@ -1,3 +1,4 @@
+import {readFileSync} from 'node:fs';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {initializeApp,deleteApp} from 'firebase/app';
@@ -25,7 +26,14 @@ test('proposal photos are private, immutable and writable only by the draft auth
   await assert.rejects(getBytes(ref(student.storage,path)),/unauthorized/i);
   await assert.rejects(uploadBytes(ref(teacher.storage,path),bytes,metadata),/unauthorized/i);
   await assert.rejects(uploadBytes(ref(student.storage,`submissions/${id}/photos/foreign.png`),bytes,metadata),/unauthorized/i);
+  const modelPath=`submissions/${id}/models/model.glb`,modelBytes=readFileSync('public/models/welcome-plant.glb'),modelMeta={contentType:'model/gltf-binary'};
+  await uploadBytes(ref(teacher.storage,modelPath),modelBytes,modelMeta);
+  assert.equal((await getBytes(ref(teacher.storage,modelPath))).byteLength,modelBytes.length);
+  await assert.rejects(getBytes(ref(student.storage,modelPath)),/unauthorized/i);
+  await assert.rejects(uploadBytes(ref(student.storage,`submissions/${id}/models/foreign.glb`),modelBytes,modelMeta),/unauthorized/i);
+  await assert.rejects(uploadBytes(ref(teacher.storage,modelPath),modelBytes,modelMeta),/unauthorized/i);
   await proposal.update({status:'pending'});
+  await assert.rejects(uploadBytes(ref(teacher.storage,`submissions/${id}/models/late.glb`),modelBytes,modelMeta),/unauthorized/i);
   await assert.rejects(uploadBytes(ref(teacher.storage,`submissions/${id}/photos/late.png`),bytes,metadata),/unauthorized/i);
   await proposal.update({status:'draft',owner_id:student.uid});
   await assert.rejects(uploadBytes(ref(teacher.storage,`submissions/${id}/photos/foreign.png`),bytes,metadata),/unauthorized/i);

@@ -8,8 +8,9 @@ function text(value,label,max,required=false){if(value==null)value='';if(typeof 
 const shortFields={common_name:140,scientific_name:180,family:100,genus:100,order:100,synonyms:240,photo_credit:240,model_credit:240};
 const longFields=['description','morphology','ecology','uses','precautions','references'];
 export function validateSpecies(value){
- object(value,[...Object.keys(shortFields),...longFields,'habit','is_published','photo','model_3d']);const data={};
+ object(value,[...Object.keys(shortFields),...longFields,'habit','is_published','photo','model_3d','model_hotspots']);const data={};
  if(value.model_3d!==undefined)data.model_3d=text(value.model_3d,'Modelo 3D',512);
+ if(value.model_hotspots!==undefined){data.model_hotspots=validateHotspots(value.model_hotspots);if(data.model_hotspots.length&&!data.model_3d)fail('Los puntos necesitan un modelo 3D asociado.');}
  for(const [name,max]of Object.entries(shortFields))data[name]=text(value[name],name,max,['common_name','scientific_name','family'].includes(name));
  for(const name of longFields)data[name]=text(value[name],name,20000);
  data.habit=value.habit||'tree';if(!['tree','shrub','herb','palm','climber'].includes(data.habit))fail('Selecciona un tipo de planta válido.');
@@ -17,6 +18,20 @@ export function validateSpecies(value){
  data.is_published=value.is_published??false;data.photo=text(value.photo,'Fotografía',512);return data;
 }
 function number(value,label,min,max){if(value==null||value==='')return null;if(!['number','string'].includes(typeof value))fail(`${label}: número no válido.`);const n=Number(value);if(!Number.isFinite(n)||n<min||n>max)fail(`${label}: valor fuera de rango.`);return n;}
+export function validateHotspots(value){
+ if(!Array.isArray(value)||value.length>30)fail('Añade hasta 30 puntos informativos.');
+ const ids=new Set();return value.map(p=>{
+  object(p,['id','title','description','position','normal']);const id=validateId(p.id);if(ids.has(id))fail('Los puntos deben tener identificadores únicos.');ids.add(id);
+  function vector(v,normal=false){if(!Array.isArray(v)||v.length!==3||v.some(n=>typeof n!=='number'||!Number.isFinite(n)||Math.abs(n)>1000000))fail('Coordenadas de punto no válidas.');if(normal&&(Math.hypot(...v)<.99||Math.hypot(...v)>1.01))fail('Orientación del punto no válida.');return [...v];}
+  return {id,title:text(p.title,'Título del punto',100,true),description:text(p.description,'Descripción del punto',2000,true),position:vector(p.position),normal:vector(p.normal,true)};
+ });
+}
+export function validateSubmissionModel(value,id){
+ if(value==null)return null;object(value,['path','credit','hotspots']);validateId(id);
+ const path=text(value.path,'Modelo propuesto',512,true);
+ if(!new RegExp(`^submissions/${id}/models/[a-zA-Z0-9_-]+\\.glb$`).test(path))fail('El modelo debe pertenecer a esta propuesta.');
+ return {path,credit:text(value.credit,'Crédito del modelo',240),hotspots:validateHotspots(value.hotspots||[])};
+}
 export function validateSpecimen(value){
  object(value,['code','zone','latitude','longitude','height','observed_on','notes']);
  const data={code:text(value.code,'Código',40,true),zone:text(value.zone,'Zona',140,true),latitude:number(value.latitude,'Latitud',-90,90),longitude:number(value.longitude,'Longitud',-180,180),height:number(value.height,'Altura',0,9999.99),observed_on:text(value.observed_on,'Fecha',10),notes:text(value.notes,'Observaciones',20000)};
