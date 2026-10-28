@@ -4,7 +4,7 @@ Firestore se organiza en colecciones con identificadores string. Las especies im
 
 | Colección | Campos y función |
 |---|---|
-| species | common_name, scientific_name, family, genus, order, synonyms, habit, description, morphology, ecology, uses, precautions, references, photo, photo_credit, model_credit, is_published, is_demo, specimen_count, created_at, updated_at; datos históricos legacy_photo/legacy_model_3d al importar |
+| species | common_name, scientific_name, family, genus, order, synonyms, habit, description, morphology, ecology, uses, precautions, references, photo, photo_credit, model_3d, model_credit, model_hotspots, is_published, is_demo, specimen_count, created_at, updated_at; datos históricos legacy_photo/legacy_model_3d al importar |
 | specimens | species_id, code, zone, latitude, longitude, height, observed_on, notes y timestamps para registros nuevos |
 | photos | species_id, path, caption, credit, position y timestamps para registros nuevos |
 | scientific_names | SHA-256 del nombre normalizado como ID; campo id con propietario species |
@@ -18,6 +18,8 @@ La creación/edición/eliminación de especies y ejemplares ocurre en transaccio
 
 Los nombres científicos se normalizan por espacios y mayúsculas/minúsculas para unicidad. Los nombres almacenados conservan su escritura. Las fechas de observación son ISO YYYY-MM-DD y los timestamps usan Firestore. Los créditos y campos vacíos se conservan; la exportación no crea fuentes botánicas.
 
-No hay migración productiva o de cuentas reales en esta etapa. El helper de importación está bloqueado fuera de los emuladores locales y no sobrescribe registros ya existentes. Los modelos GLB se almacenan en Storage, se asocian mediante model_3d y se visualizan bajo demanda. El administrador puede cargar modelos de hasta 30 MB.
+Producción (`flora-viva---bosque-verde`, desde el 2026-10-22) tiene su propio inventario y sus propias cuentas: no se migraron datos ni usuarios desde los emuladores. El helper de importación está bloqueado fuera de los emuladores locales y no sobrescribe registros ya existentes. Los modelos GLB se almacenan en Storage, se asocian mediante `model_3d` y se visualizan bajo demanda. El administrador puede cargar modelos de hasta 30 MB.
+
+`species.model_hotspots` guarda hasta 30 puntos informativos `{id,title,description,position:[x,y,z],normal:[x,y,z]}` (título 100 y descripción 2000 caracteres, normal unitaria). Sustituir o retirar `model_3d` vacía la lista. En `submissions`, el campo `model:{path,credit,hotspots}` conserva el modelo propuesto bajo `submissions/{id}/models/`, separado de `data`; al aprobar se copia a `species/{id}/models/`.
 
 Colecciones nuevas: `roles` (rol y autor/fecha del cambio), `profiles` (nombre, institución, biografía), `role_requests` (solicitud de profesor, estado, email y revisión), `submissions` (ficha propuesta, autor, estado y revisión). Perfil y solicitudes solo son legibles por propietario/administrador. Las propuestas solo aparecen en species después de aprobarse transaccionalmente. Véase ROLES.md.

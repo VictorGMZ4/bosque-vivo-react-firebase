@@ -1,7 +1,6 @@
 import {createHash} from 'node:crypto';
 export class DomainError extends Error {constructor(code,message){super(message);this.code=code;}}
 export function fail(message,code='invalid-argument'){throw new DomainError(code,message);}
-export function requireAdmin(auth){if(!auth)fail('Inicia sesión para continuar.','unauthenticated');if(auth.token?.admin!==true)fail('Tu cuenta no tiene permiso de administración.','permission-denied');}
 export function keyFor(value){return createHash('sha256').update(value.trim().replace(/\s+/g,' ').toLocaleLowerCase('es')).digest('hex');}
 function object(value,keys){if(!value||typeof value!=='object'||Array.isArray(value))fail('Datos no válidos.');for(const key of Object.keys(value))if(!keys.includes(key))fail(`Campo no permitido: ${key}.`);}
 function text(value,label,max,required=false){if(value==null)value='';if(typeof value!=='string')fail(`${label}: escribe texto.`);value=value.trim();if((required&&!value)||value.length>max)fail(`${label}: ${required?'es obligatorio y ':''}admite hasta ${max} caracteres.`);return value;}

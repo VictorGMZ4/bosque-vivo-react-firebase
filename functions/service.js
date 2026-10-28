@@ -1,7 +1,7 @@
 import {FieldValue} from 'firebase-admin/firestore';
 import {db} from './firebase.js';
 import {requireRole} from './access.js';
-import {fail,requireAdmin,keyFor,validateSpecies,validateSpecimen,validatePhoto,validateId,validatePath} from './domain.js';
+import {fail,keyFor,validateSpecies,validateSpecimen,validatePhoto,validateId,validatePath} from './domain.js';
 import {checkModel} from './model-assets.js';
 const collections={species:'species',specimen:'specimens',photo:'photos'};
 export async function mutateData(auth,input){

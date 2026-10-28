@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {validateSpecies,validateSpecimen,validatePhoto,keyFor,requireAdmin} from '../functions/domain.js';
+import {validateSpecies,validateSpecimen,validatePhoto,keyFor} from '../functions/domain.js';
 import {mediaName} from '../functions/import-utils.js';
 const plant={common_name:'Ceiba',scientific_name:'Ceiba pentandra',family:'Malvaceae',habit:'tree',is_published:true};
 test('species preserves required fields and rejects incomplete or forged metadata',()=>{
@@ -16,10 +16,8 @@ test('specimen enforces coordinate pair, height and calendar date',()=>{
  assert.throws(()=>validateSpecimen({code:'C',zone:'Campus',height:'-1'}));
  assert.throws(()=>validateSpecimen({code:'C',zone:'Campus',observed_on:'2026-02-30'}));
 });
-test('canonical uniqueness and server-only administrator claim',()=>{
+test('canonical uniqueness ignores spacing and case',()=>{
  assert.equal(keyFor('  CEIBA  pentandra '),keyFor('ceiba pentandra'));
- assert.throws(()=>requireAdmin(null)); assert.throws(()=>requireAdmin({token:{admin:false}}));
- assert.doesNotThrow(()=>requireAdmin({token:{admin:true}}));
 });
 test('photos keep credits and cannot reference another species storage path',()=>{
  assert.equal(validatePhoto({caption:'Hoja',credit:'UNIPAZ',path:'species/8/photos/a.webp',position:0},'8').credit,'UNIPAZ');

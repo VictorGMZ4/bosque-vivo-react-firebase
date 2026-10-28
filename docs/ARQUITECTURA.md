@@ -1,5 +1,7 @@
 # Flora Viva Bosque Verde con React y Firebase
 
+> **Estado actual (2026-10-28):** el frontend está publicado en Vercel (`floraviva-unipaz.vercel.app`) y el backend en Firebase (`flora-viva---bosque-verde`: Authentication, Firestore, Storage y las funciones `mutate` y `workspace`) desde el 2026-10-22. Las secciones siguientes conservan el diseño en orden cronológico; las menciones a «solo emuladores» o «sin despliegue» describen el alcance de cada entrega en su fecha. Operación: [VERCEL.md](VERCEL.md).
+
 Fecha: 2026-10-05, America/Bogota. Aplicación nueva, separada del proyecto Django, que permanece intacto. Alcance autorizado: catálogo, fichas y CRUD administrativo de especies, ejemplares y fotografías. Incluye visor GLB del girasol, carga administrativa de modelos, perfiles y revisión de cuentas/especies. No incluye mapa.
 
 Frontend React + Vite, rutas /catalogo/, /especies/:id/, /ingresar/ y /gestion/. Firebase Authentication identifica al equipo; roles autoritativos en Firestore conceden permisos; el claim admin original solo se usa si no existe documento de rol. Visitantes leen exclusivamente especies publicadas. Firestore almacena species, specimens, photos y registros de unicidad. Storage almacena fotografías bajo species/{id}/; las reglas controlan lectura según publicación y escritura por administrador. Cloud Functions callable validan mutaciones, unicidad y relaciones mediante transacciones; los clientes no escriben directamente en Firestore.

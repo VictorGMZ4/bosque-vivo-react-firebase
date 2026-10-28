@@ -1,6 +1,6 @@
 # Ampliación funcional de Flora Viva · Bosque Verde
 
-Estas funciones se desarrollaron para React y Firebase emulado, manteniendo separado el proyecto Django. No requieren que el hosting esté publicado para probarlas localmente.
+Estas funciones se desarrollaron y probaron primero con Firebase emulado, manteniendo separado el proyecto Django. Desde el 2026-10-22 están publicadas en producción (Vercel + `flora-viva---bosque-verde`); para probarlas localmente siguen bastando los emuladores.
 
 | Función | Dónde usarla | Comportamiento |
 |---|---|---|
@@ -37,4 +37,4 @@ Colecciones Firestore nuevas: `personal_collections`, `learning_quizzes`, `learn
 - Los cuestionarios son actividades formativas: permiten intentos sucesivos y muestran soluciones tras responder. No incluyen supervisión de exámenes ni informes grupales para profesores.
 - La papelera restaura especies y galerías; no ofrece restauración individual de ejemplares o fotografías eliminados. Se mantiene el bloqueo de retirada de especies con ejemplares asociados.
 - Las subidas/copia de archivos y las transacciones Firestore son operaciones separadas. Un fallo puede dejar archivos sin referencia; no se borran físicamente sin una política posterior de respaldo y limpieza.
-- Antes de publicar: configurar Firebase real, desplegar backend, reglas e índices, verificar Node 22, dominios y CORS de Storage. No se activó facturación ni se desplegó infraestructura en esta ampliación.
+- Cada cambio de backend exige desplegar Functions, reglas e índices antes del frontend cuando cambia el contrato, con Node 22, y revisar dominios autorizados y CORS de Storage al añadir un dominio. Procedimiento en [VERCEL.md](VERCEL.md).

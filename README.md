@@ -1,131 +1,129 @@
-# Flora Viva Bosque Verde
+# Flora Viva · Bosque Verde
 
-Primera etapa funcional de la migración a React y Firebase. Aplicación independiente de la carpeta hermana `bosque-vivo`: no utiliza Django para ejecutar el catálogo, autenticación, CRUD o fotografías. La carpeta original quedó intacta. El nombre de la aplicación es **Flora Viva · Bosque Verde**, con referencia institucional UNIPAZ.
+Aplicación de divulgación botánica de UNIPAZ construida con React, Vite y Firebase. Es independiente del proyecto Django de la carpeta hermana `bosque-vivo`.
 
-La portada incorpora la planta 3D original de Django con giro/zoom, respaldo visual y reintento. El visor restaura el verde perdido al exportar el material procedural de Blender, sin modificar el GLB. Las fichas públicas incluyen una etiqueta QR de impresión con nombre común/científico, identidad institucional y descargas PNG/SVG. `VITE_PUBLIC_SITE_URL` fija el dominio definitivo de los códigos.
+**Documentación actualizada: 27 de octubre de 2026.** El estado de producción descrito corresponde a los despliegues y comprobaciones realizados el 22 de octubre; no implica una auditoría nueva de producción en esta fecha.
 
-Para publicar React en Vercel y mantener Firebase como backend, consulta la [guía paso a paso de Vercel](docs/VERCEL.md). Se incluye `vercel.json` para las rutas. No se ha efectuado un despliegue real.
+## Sitio publicado
 
-## Qué funciona en esta entrega
+- Sitio principal: **https://floraviva-unipaz.vercel.app**.
+- Dominio anterior conservado: https://bosque-vivo-react-firebase.vercel.app.
+- Repositorio: https://github.com/VictorGMZ4/bosque-vivo-react-firebase, rama `main`.
+- Proyecto Vercel: `flora-viva/bosque-vivo-react-firebase`.
+- Proyecto Firebase: `flora-viva---bosque-verde`.
+- Storage: `flora-viva---bosque-verde.firebasestorage.app`.
+- Backend: funciones callable `mutate` y `workspace`, región `us-central1`, runtime Node 22.
 
-- Catálogo público con búsqueda por nombre científico/común, sinónimos y familia, filtros de familia/tipo y paginación local de nueve fichas.
-- Ficha con identificación, taxonomía, textos botánicos, foto principal y créditos, galería y ejemplares.
-- Ingreso y registro mediante Firebase Authentication. Roles Estudiante/Visitante, Profesor/Investigador y Admin, asignados por backend; solicitud de profesor con aprobación administrativa. Sin registro público de administradores.
-- Crear, editar, publicar/despublicar y eliminar especies; unicidad de nombre científico validada en servidor mediante transacción.
-- Crear, editar y eliminar ejemplares, códigos únicos, validación de fechas/coordenadas/altura y bloqueo del borrado de especies con ejemplares.
-- Subir y cambiar fotografía principal; añadir, editar créditos/descripción/orden y eliminar registros de galería. Fotografías JPG/PNG/WebP hasta 8 MB; acceso a archivos según publicación de la especie.
-- QR hacia `/especies/{id}/` de la nueva aplicación. Los identificadores originales se conservan. Los QR anteriores y el sitio Django no fueron modificados; para conservar códigos ya impresos al publicar, el origen público y esas rutas deben seguir disponibles.
+Las mejoras se publicaron desde el commit `3851cb9`. Después se redesplegó el mismo código con `VITE_PUBLIC_SITE_URL=https://floraviva-unipaz.vercel.app` y se corrigió CORS del bucket para admitir el nuevo dominio. Consulta [publicación y mantenimiento en Vercel](docs/VERCEL.md).
 
-**Actualmente se usa Firebase emulado en el computador, sin proyecto productivo ni facturación.** La ficha del girasol incluye el modelo GLB original mediante `@google/model-viewer`: carga bajo demanda, giro/zoom, restablecimiento de cámara y reintento de descarga. Se preserva el crédito original. Se añadieron instalación PWA y guardado de fichas públicas para lectura sin conexión; los modelos 3D requieren conexión. No se incluyó mapa.
+## Funcionalidades disponibles
 
-La ampliación incorpora propuestas con fotografías y reenvío, notificaciones internas, colecciones privadas, comparación y filtros, cuestionarios, consulta offline e historial con papelera. Consulta [la guía de las siete funcionalidades](docs/FUNCIONALIDADES.md).
+- Catálogo con búsqueda, filtros por familia, género, tipo de planta, fotografía y modelo 3D; contadores, paginación y descubrimiento aleatorio entre los resultados.
+- Ficha completa con identificación, taxonomía, descripción, morfología, ecología, usos, precauciones, fuentes, fotografía y ejemplares. La administración de galería permanece para administradores; no se presenta una galería pública en esta versión.
+- Vista rápida del catálogo y pasaporte botánico independiente al escanear un QR.
+- Firebase Authentication, perfil privado y roles Estudiante/Visitante, Profesor/Investigador y Admin. Las solicitudes de profesor requieren aprobación; no hay registro público de administradores.
+- Administración de especies y ejemplares con validación en servidor, nombres científicos y códigos únicos, publicación, historial y papelera.
+- Propuestas de profesores con fotografías, modelo 3D, puntos informativos, revisión administrativa, corrección y reenvío; notificaciones internas.
+- Colecciones privadas, comparación de especies y cuestionarios evaluados por el servidor.
+- Plantillas Word/Excel e importación para revisar la información antes de guardarla. [Guía de importación](docs/IMPORTAR-ESPECIES.md).
+- Instalación PWA y guardado de fichas públicas para consulta offline con texto y fotografías. Los modelos 3D requieren conexión.
 
-La navegación y las pantallas de cuenta se renovaron siguiendo `emil-design-eng`: barras principal y de herramientas diferenciadas, acceso/registro con identidad botánica, control de visibilidad de contraseña y perfil con resumen de cuenta, rol y formulario privado. El diseño se adapta a móvil, conserva el guardado con regreso al inicio y respeta movimiento reducido. Las solicitudes de profesor siguen requiriendo aprobación administrativa.
+Consulta también [funcionalidades](docs/FUNCIONALIDADES.md) y [roles](docs/ROLES.md).
 
-El GLB se guarda en Storage bajo `species/{id}/models/` y se obtiene mediante un blob sujeto a reglas de publicación. El administrador puede cargar GLB desde Editar especie, sustituirlos o retirar la referencia y editar el crédito. Los demás roles no pueden subir modelos. Tras reconstruir el inventario local, ejecuta `node scripts/run-local.mjs models` para importar los GLB autocontenidos (hasta 30 MB) desde la copia existente sin sobrescribir modelos asignados. El girasol ocupa aproximadamente 2 MB. El módulo del visor pesa unos 297 kB comprimidos y se descarga únicamente al pulsar «Cargar modelo 3D». Se requiere WebGL; la fotografía sigue disponible en la ficha.
+## Identidad y diseño
 
-## Iniciar en Windows
+La bienvenida muestra la marca y el campus sin cabecera ni pie general; se retiró la pantalla introductoria de carga. El pie de las páginas interiores incorpora vegetación lateral, logos Flora Viva/UNIPAZ y enlaces Inicio, Especies y Sobre el proyecto (`/sobre-el-proyecto/`). Instagram, Facebook y YouTube permanecen como iconos informativos «Próximamente», sin enlaces.
 
-Requisitos: Node 22.12+ (Node 22 recomendado para Cloud Functions), pnpm 11 y Java 21 accesible en PATH o JAVA_HOME. En esta sesión se utilizó Node 24.19.0 y los emuladores ejecutaron las funciones con Node 24; el runtime productivo declarado es Node 22 y debe verificarse antes de publicar. El script de arranque puede aprovechar el Java 21 ya instalado por Autopsy en este equipo, sin modificar esa instalación ni las variables del sistema.
+El catálogo incorpora diez ilustraciones botánicas individuales en WebP transparente. Se muestran desde los costados al bajar, con orientación según cada tallo, sin difuminación. La cantidad visible depende de la altura disponible: un catálogo corto no necesita mostrar las diez. En móvil se conserva la escala de las plantas y se ajustan los márgenes de las fichas. Son decoraciones, no fotografías identificativas de las especies. Las animaciones respetan movimiento reducido.
 
-Desde esta carpeta:
+## QR y carta de presentación
+
+Los QR nuevos abren `/especies/{id}/explorar/` en el dominio definitivo. Esta carta muestra información breve, fotografía, familia, hábito y modelo opcional; mantiene el acabado holográfico y movimiento vertical suave, con pausa y soporte de movimiento reducido. No lleva la cabecera ni el pie general. «Ver ficha completa» abre `/especies/{id}/`.
+
+Al pulsar «Explora la especie en 3D» comienza la carga del modelo, sin un segundo botón. El visor compacto conserva los puntos sobre la planta y sus viñetas; oculta las instrucciones visibles y la lista externa de puntos, y deja el crédito plegado.
+
+«Compartir QR» ofrece una tarjeta con campus, nombres botánicos y marcas institucionales. «Imprimir etiqueta QR» permite imprimirla o guardarla como PDF; «Descargar QR» y «Descargar SVG» descargan el código individual. El icono de teléfono/mano fue retirado. El QR conserva margen blanco, contraste negro/blanco y corrección M.
+
+`VITE_PUBLIC_SITE_URL` fija el origen de los QR al compilar. Los archivos descargados o impresos antes de cambiar la dirección **no se actualizan solos**: deben generarse nuevamente. El dominio anterior se conserva; las rutas de ficha completa siguen disponibles.
+
+## Modelos 3D y puntos manuales
+
+El administrador carga, sustituye o retira GLB desde **Editar especie → Modelo 3D** y puede editar el crédito. El profesor utiliza el editor en su propuesta; el archivo y sus puntos permanecen privados hasta su aprobación. Se aceptan GLB autocontenidos de hasta 30 MB, con validación en cliente y servidor.
+
+Para crear un punto, pulsa «Añadir punto informativo», selecciona una superficie del modelo y escribe título y descripción. Se puede recolocar o eliminar; al guardar se conserva en `model_hotspots`. Máximo 30 puntos. Cambiar o retirar el modelo limpia los puntos anteriores previa confirmación.
+
+Los visitantes ven marcadores pequeños sin números y, al seleccionarlos, una viñeta dentro del visor que sigue al punto durante giro/zoom. Se mantienen etiquetas accesibles y áreas de pulsación amplias. La ficha completa conserva la lista alternativa; la carta QR utiliza la vista compacta.
+
+Los modelos publicados se guardan en `species/{id}/models/`; los de propuestas en `submissions/{id}/models/`. Fotos y GLB se descargan mediante blobs sujetos a reglas de Storage, no mediante enlaces públicos permanentes con tokens. El origen del sitio debe estar incluido en CORS del bucket.
+
+## Desarrollo local en Windows
+
+Requisitos: Node 22.12+ de la rama 22 para coincidir con Functions, pnpm 11 y Java 21 para emuladores. Las pruebas históricas locales también utilizaron Node 24; producción desplegó Functions con Node 22.
 
 ```powershell
 pnpm install --frozen-lockfile
 pnpm emulators
 ```
 
-El primer arranque descarga los binarios oficiales y requiere conexión. Se guardan en `work/firebase-emulators`; los servicios escuchan solo en 127.0.0.1. El estado se conserva en `work/emulator-data` cuando se cierra ordenadamente con Ctrl+C; si existe un export válido se restaura al iniciar. Auth 9099, Firestore 8080, Functions 5001 y Storage 9199; los puertos deben estar libres.
-
 En otra terminal:
 
 ```powershell
+pnpm dev
+# Alternativa: compilar y servir la compilación
 pnpm build
 pnpm preview
 ```
 
-Abre [la aplicación compilada](http://127.0.0.1:4174/catalogo/). Para desarrollar con recarga automática usa `pnpm dev` y http://127.0.0.1:5174. React muestra un aviso visible de evaluación local. Las peticiones van directamente al SDK Firebase/emuladores; no necesitan el servidor Django.
+Puertos configurados en `vite.config.js`: desarrollo http://127.0.0.1:5174 y preview http://127.0.0.1:4174, ambos con `strictPort`. Si el puerto está ocupado, Vite se detiene en lugar de cambiarlo; libéralo o consulta la URL que muestra la terminal.
 
-## Datos originales y acceso local
+Los emuladores usan `demo-bosque-vivo`: Auth 9099, Firestore 8080, Functions 5001 y Storage 9199, solo en 127.0.0.1. El primer arranque necesita conexión para descargar binarios. El estado se guarda en `work/emulator-data` al cerrar ordenadamente con Ctrl+C. La app usa emuladores por defecto; producción requiere `VITE_USE_EMULATORS=false` y la configuración web de Firebase.
 
-La copia local ya contiene siete especies: seis publicadas y un borrador. Se mantuvieron los valores del inventario, incluidos nombres y marcas de demostración; no se corrigieron ni inventaron datos botánicos. El inventario original no contenía ejemplares ni fotografías de galería; estos flujos se comprobaron con registros QA temporales y se retiraron después de las pruebas.
+## Datos y credenciales locales
 
-La cuenta administrativa local tiene credenciales aleatorias en **`work/local-access.json`**. Abre ese archivo localmente para ingresar en `/ingresar/`. No son credenciales Django ni de una cuenta real. No publiques ni compartas ese archivo, los exports de Auth o la carpeta work.
+La copia migrada de prueba y las especies productivas son inventarios independientes. Publicar código no copia especies, fotos, modelos, usuarios ni contraseñas desde los emuladores. No se inventan datos botánicos ni se sustituyen registros productivos con fixtures.
 
-Si necesitas reconstruir una copia inicial a partir del Django hermano:
+Las credenciales administrativas del emulador están en `work/local-access.json`. No son una cuenta productiva. No publiques `work`, exports de Authentication, `.env` reales ni cuentas de servicio.
+
+Para reconstruir una copia local desde el Django hermano:
 
 ```powershell
 ..\bosque-vivo\.venv\Scripts\python.exe scripts/export_django.py
 pnpm import:local
+node scripts/run-local.mjs models
 ```
 
-El exportador usa únicamente SQLite en modo solo lectura y la biblioteca estándar de Python; no importa Django. Incluye especies, ejemplares y fotos con sus medios referenciados; excluye tablas de usuarios/sesiones/credenciales. Guarda todo en `work/import`. La importación solo acepta `demo-bosque-vivo` con los cuatro hosts locales; nunca apunta a producción. No sobrescribe registros existentes en el emulador. Los códigos/nombres se reservan transaccionalmente y se rechazan colisiones. Los archivos de destino se normalizan para aceptar nombres originales con espacios/acentos. Tras importar se crea/habilita solo la cuenta administrativa del emulador.
-
-Las fotos retiradas y los archivos de QA permanecen físicamente en Storage para una futura limpieza con respaldo. Al eliminar la especie, sus archivos dejan de ser legibles por visitantes. No se usan URLs públicas con tokens de descarga: la interfaz obtiene blobs mediante el SDK y aplica reglas.
-
-## Roles y colaboración
-
-Consulta [la guía de roles](docs/ROLES.md). El registro permite seleccionar Estudiante/Visitante o solicitar Profesor/Investigador. El administrador revisa cuentas en Usuarios y especies en Revisiones. Mi perfil permite guardar nombre, institución y biografía; después vuelve al inicio. La previsualización de texto está disponible antes de guardar o enviar una especie. Los profesores pueden adjuntar hasta cinco fotografías con descripción y créditos, corregir propuestas rechazadas y reenviarlas; el administrador aprueba la ficha con sus fotografías.
+El exportador consulta SQLite en solo lectura y excluye usuarios, sesiones y credenciales. La importación solo admite el proyecto demo y hosts de emuladores; no sobrescribe registros existentes. El importador de modelos conserva los ya asignados. Eliminar una referencia no borra automáticamente su archivo físico: la limpieza de huérfanos requiere un proceso con respaldo.
 
 ## Estructura
 
-El diseño integra **Tailwind CSS 4** mediante el plugin oficial `@tailwindcss/vite`. `src/styles.css` define la paleta botánica con `@theme` y componentes con `@apply` para tarjetas, paneles, cuadrículas, tablas y diálogos; el layout React también usa utilidades del tema. Se conservan el reset existente y CSS específico para tipografía, detalles visuales y animaciones accesibles. Las utilidades se generan localmente durante el build, sin CDN. Referencia: [integración oficial con Vite](https://tailwindcss.com/docs/installation/using-vite).
-
 | Carpeta | Responsabilidad |
 |---|---|
-| `src/` | React, rutas, Firebase SDK, autenticación y componentes de consulta/administración |
-| `functions/` | Backend callable, validación y transacciones de datos |
+| `src/` | React, rutas, SDK Firebase, autenticación, catálogo, carta QR y editores |
+| `functions/` | Callables, permisos, validación GLB/puntos y transacciones |
 | `firebase/` | Reglas Firestore/Storage e índices |
-| `scripts/` | Arranque, exportación de solo lectura y comprobación de integridad |
-| `tests/` | Validación, permisos/CRUD reales en emuladores y recorrido de navegador |
-| `docs/` | Arquitectura, modelo de datos, bitácora y pendientes |
-| `work/` | Datos/emuladores/credenciales/evidencia local; nunca entrega pública |
+| `public/` | Logos, ilustraciones, recursos estáticos y service worker |
+| `scripts/` | Arranque, importación local y comprobaciones |
+| `tests/` | Validación y pruebas de permisos/integración |
+| `docs/` | Arquitectura, operación y bitácora |
+| `work/` | Datos y evidencia local ignorados por Git |
 
-## Pruebas
+El diseño utiliza Tailwind CSS 4 mediante Vite, más CSS específico. El visor usa `@google/model-viewer`; la portada usa Three.js. Los prototipos de animación no deben confundirse con dependencias de la versión integrada.
 
-Con emuladores funcionando:
+## Comprobaciones y límites
 
 ```powershell
 pnpm test
+# Con emuladores iniciados:
 pnpm test:integration
 pnpm build
-# Si Playwright está disponible en el runtime:
-$env:PLAYWRIGHT_MODULE="ruta/al/modulo/playwright"
-$env:BROWSER_PATH="C:/Program Files/Google/Chrome/Application/chrome.exe"
-node tests/browser.cjs
-node tests/features-browser.cjs
 ```
 
-Validación de la ampliación del 7 de octubre: ocho pruebas unitarias y once de integración aprobadas, incluidos roles, moderación, colecciones, aprendizaje, notificaciones, papelera y permisos de archivos. Siete recorridos nuevos en Chrome verificaron las funciones integradas, incluida la recarga offline con fotografías; evidencia en `work/qa/features-results.json`. Pruebas de reglas esperan rechazos PERMISSION_DENIED; esos avisos en la consola son evidencia de denegación, no fallos de la suite. Chrome automatizado verificó el catálogo en 375/390/768/1440 px, ingreso, administración y CRUD de especies/ejemplares/fotos, borradores, bloqueo de borrado y cierre de sesión, sin errores JavaScript. Evidencia `work/qa/browser-results.json` y capturas. La comprobación `scripts/check-django.py` comparó 105 hashes de origen (incluyendo SQLite, medios, código y documentación): sin cambios. Excluye entornos virtuales, node_modules, work, staticfiles y __pycache__.
+El 22 de octubre pasaron **24 pruebas unitarias, 12 de integración y el build**. Hubo comprobaciones locales de catálogo responsive, impresión QR, pasaporte, puntos manuales y movimiento reducido. Los avisos PERMISSION_DENIED de pruebas negativas son esperados. El build conserva advertencias de tamaño de bundles e importaciones compartidas.
 
-## Preparación para Firebase real
+En producción se confirmó el despliegue Ready, acceso al catálogo y cartas, y que el SVG QR generado coincide con el destino del nuevo dominio. Tras corregir CORS se comprobó la fotografía y el modelo de Arizá. Estas pruebas no equivalen a validar cada dispositivo físico, todos los modelos ni el escaneo de una impresión.
 
-`.env.example` describe configuración web pública; nunca coloques una clave de cuenta de servicio en variables VITE_. La app usa emuladores por defecto. Para un proyecto real hacen falta proyecto Firebase, proveedor Email/Password habilitado, Firestore, Storage, backend desplegado, reglas e índices publicados y rol administrador asignado desde Admin SDK. No basta con copiar la configuración web.
+El service worker conserva una versión coherente de la aplicación y espera a que se cierren sus pestañas para activar la siguiente. Si aparece la URL antigua, cierra todas las pestañas y ventanas instaladas de Flora Viva, vuelve a abrir y descarga el QR otra vez; una ventana privada ayuda a distinguir caché de errores de publicación.
 
-El despliegue de Functions y Storage implica habilitar Blaze y revisar consumo. **No se habilitó ni desplegó nada en esta entrega.** Las credenciales Django y sus hashes de contraseñas no se trasladaron a Firebase; el acceso de las personas reales requiere una estrategia específica. La política de App Check, CORS productivo para blobs, regiones, dominio y continuidad de QR debe revisarse antes de publicar. La aplicación local no constituye validación de esos servicios productivos.
+Quedan pendientes enlaces sociales/contacto definitivos, completar contenido y medios del inventario, pruebas físicas de accesibilidad/escaneo, revisión de App Check y limpieza de archivos huérfanos. No hay mapa ni edición offline. La consulta descarga hasta 1.000 especies y pagina en el cliente; inventarios mayores requieren búsqueda/paginación en servidor. Fotos y registros se guardan en operaciones separadas.
 
-La consulta inicial descarga como máximo 1.000 especies y pagina en el cliente, adecuada para este inventario pequeño. Una colección grande necesita paginación/índices y búsqueda de servidor. No hay edición offline ni bloqueo/eliminación de cuentas desde la interfaz. El historial registra cambios nuevos; no reconstruye operaciones anteriores a su incorporación. La carga de foto y el guardado Firestore son operaciones distintas; un fallo puede dejar un archivo huérfano que debe limpiarse. El diálogo de eliminación y la interfaz necesitan evaluación exhaustiva de accesibilidad y dispositivos físicos; la verificación actual es emulada.
-
-Referencias oficiales consultadas: [emuladores](https://firebase.google.com/docs/emulator-suite/install_and_configure), [funciones callable](https://firebase.google.com/docs/functions/callable), [claims y permisos](https://firebase.google.com/docs/auth/admin/custom-claims), [runtime Node](https://firebase.google.com/docs/functions/manage-functions). Detalles de la entrega en [bitácora](docs/BITACORA.md).
-
-# Importar fichas desde Word y Excel
-
-Los formularios de registro y propuesta incluyen plantillas descargables y carga de datos para revisión antes de guardar. Consulta [la guía de importación](docs/IMPORTAR-ESPECIES.md).
-
-## Explorar la colección
-
-La bienvenida muestra la marca y el campus sin barras de navegación ni pie de página. Al entrar al catálogo aparecen filtros visuales con contadores y «Descubre una especie», que elige entre los resultados de la búsqueda. Las fichas incluyen accesos a sus apartados. La vista rápida y las fichas tienen transiciones breves compatibles con movimiento reducido, y la carga muestra estructuras provisionales. El pie de página se presenta en las páginas interiores; sus datos de contacto están pendientes.
-
-Comprobación de interfaz sin escribir en Firebase: `node scripts/check-refresh-ui.mjs` con `PLAYWRIGHT_MODULE` apuntando al módulo Playwright disponible y Microsoft Edge instalado. Los registros utilizados son sintéticos. Pruebas generales: `pnpm test` y `pnpm build`.
-
-## Tarjetas QR
-
-En una ficha publicada, Compartir QR muestra una tarjeta con el campus, los datos botánicos y las marcas de Flora Viva y UNIPAZ. El código abre la ficha de esa especie. La tarjeta conserva el diseño horizontal al imprimir; en móviles se adapta en vertical. Imprimir etiqueta QR permite guardar la tarjeta completa como PDF; Descargar QR y Descargar SVG descargan el código individual. Se conservan los márgenes blancos para escanear y las advertencias de enlaces locales. Prueba de interfaz e impresión con registros sintéticos: `scripts/check-qr-card-ui.mjs`.
-
-## Puntos informativos en modelos 3D
-
-En **Editar especie → Modelo 3D**, carga el GLB o utiliza el existente. Pulsa **Añadir punto informativo**, toca una parte de la planta y completa título y descripción. Puedes seleccionar cada punto, recolocarlo o eliminarlo. Guarda la especie para conservar los cambios. Máximo 30 puntos por modelo; reemplazar o retirar el archivo elimina los puntos anteriores previa confirmación.
-
-Los profesores usan el mismo editor en **Proponer especie**. El modelo y los puntos permanecen privados hasta que administración los revise y apruebe. Las fichas públicas permiten consultar los puntos, sin editarlos. Esta actualización requiere desplegar tanto Functions como las reglas de Storage, además del frontend, cuando se autorice su publicación.
-
-Los QR de las especies abren un pasaporte botánico en `/especies/:id/explorar/`, con información breve, fotografía y modelo 3D opcional. Desde la tarjeta se puede acceder a la ficha completa existente.
+Historial detallado: [BITACORA.md](docs/BITACORA.md). Arquitectura: [ARQUITECTURA.md](docs/ARQUITECTURA.md).

@@ -253,3 +253,28 @@ Por petición del usuario se retiró toda la entrada de hibisco de la aplicació
 - Actualización del backend Firebase iniciada antes de publicar el cliente: las nuevas escrituras requieren model_hotspots y reglas de modelos de propuestas.
 - URL pública de QR pendiente de verificación por correo requerida por Vercel. Se conserva el dominio anterior.
 - Despliegue de reglas Storage confirmado. El primer despliegue de funciones terminó con timeout; ambas figuran ACTIVE pero workspace conserva la versión anterior, por lo que se reintenta esa función antes de publicar el cliente.
+- Resultado de publicación: workspace y mutate actualizadas con confirmación Successful update operation. Commit 3851cb9 enviado a main; Vercel deployment DkH3JWPgbH16kMUob2S1CsQkV2JH Ready en Production.
+- Comprobación pública: floraviva-unipaz.vercel.app/catalogo carga las dos especies productivas y siete ilustraciones correspondientes a su altura; carta de Sangre toro abre sin barra superior ni pie. No se copiaron datos de emuladores.
+- Pendiente: Vercel exige verificación por correo para editar VITE_PUBLIC_SITE_URL. Los QR publicados aún usan bosque-vivo-react-firebase.vercel.app (dominio conservado y funcional); falta fijar https://floraviva-unipaz.vercel.app y redesplegar.
+- QR finalizado: verificación de identidad completada por el propietario, VITE_PUBLIC_SITE_URL guardada como https://floraviva-unipaz.vercel.app y redespliegue de producción Ready (bosque-vivo-react-firebase-axa80s9qs-flora-viva.vercel.app). La etiqueta muestra el dominio nuevo. El SVG descargado coincide exactamente con un QR generado para https://floraviva-unipaz.vercel.app/especies/3twoxvQ0zquGNcMNRnOk/explorar/.
+- Una pestaña previamente abierta conservaba el cliente anterior en el service worker; cerrar las pestañas antiguas permite activar la actualización. No se guardaron códigos de verificación ni credenciales en archivos del proyecto.
+
+## 2026-10-22 — Descargas multimedia tras cambio de dominio
+- Causa confirmada: CORS del bucket flora-viva---bosque-verde.firebasestorage.app solo admitía GET/HEAD desde bosque-vivo-react-firebase.vercel.app. El dominio nuevo quedaba excluido.
+- Se agregó https://floraviva-unipaz.vercel.app para GET/HEAD y Content-Type, conservando la política anterior, reglas de Storage e IAM. Lectura posterior de la configuración confirmó el cambio.
+- La foto de Arizá volvió a cargar como blob y decodificó correctamente en el dominio nuevo.
+
+## 2026-10-27 — Actualización de documentación operativa
+- README.md reorganizado para reflejar producción, dominio definitivo, QR al pasaporte, visor compacto, puntos manuales de admin/profesor, diseño botánico y separación de datos locales/productivos.
+- docs/VERCEL.md actualizado como guía de mantenimiento del proyecto existente: orden backend/frontend, variables, despliegues confirmados, CORS con ambos orígenes, caché PWA y regeneración de QR descargados.
+- Se retiran afirmaciones obsoletas de ausencia de despliegue, exclusividad local y carga de modelos solo por admin. Se distinguen comprobaciones históricas del 22 de octubre de pendientes no verificados.
+- Validación de esta actualización: contraste con código, configuración y bitácora; revisión de enlaces locales y diff. Solo documentación, sin despliegue ni cambios de datos o permisos.
+
+## 2026-10-28 — Limpieza de código muerto y documentación coherente con producción
+- Primer cambio de Claude en el equipo, aprobado por el usuario antes de validarse.
+- Eliminada `requireAdmin` de `functions/domain.js`: no se llamaba y solo comprobaba el claim `admin`, sin consultar `roles/{uid}`. Retiradas sus importaciones en `functions/index.js` y `functions/service.js`, y sus aserciones en `tests/domain.test.mjs`. Los permisos siguen aplicándose con `requireRole` y están cubiertos en `tests/roles.test.mjs`. Sin cambios de comportamiento, reglas ni contrato de las funciones.
+- README: retirados los puertos de sesión 4188/4197 (solo existen 5174 y 4174 con `strictPort`) y el enlace absoluto a Sobre el proyecto. VERCEL.md aclara que instalación y versión de Node se configuran en el panel de Vercel, no en `vercel.json`.
+- ROLES, MODELO_DATOS, FUNCIONALIDADES y ARQUITECTURA ya no afirman ausencia de despliegue; documentan modelos y puntos en propuestas de profesores, `model_3d`/`model_hotspots` y `submissions.model`. ARQUITECTURA conserva su historial con una nota de estado actual.
+- Validación: `pnpm test` 24/24; `pnpm test:integration` 12/12 con emuladores demo-bosque-vivo; `pnpm build` correcto (advertencias de tamaño de chunks ya existentes); `functions/index.js` carga y exporta `mutate` y `workspace`.
+- Observación: desde Git Bash, `pnpm emulators` no encuentra Java aunque detecta el JRE de Autopsy; probablemente porque el script añade `Path` mientras ese entorno usa `PATH` (hipótesis sin confirmar). Se arrancó exportando `JAVA_HOME` y `PATH`, sin modificar el script. No se probó desde PowerShell.
+- Sin commit ni despliegue. Para producción bastaría con redesplegar Functions, pero el cambio no altera su comportamiento y puede esperar a la próxima publicación.

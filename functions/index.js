@@ -1,6 +1,6 @@
 import {onCall,HttpsError} from 'firebase-functions/v2/https';
 import {mutateData} from './service.js';
-import {requireAdmin,DomainError} from './domain.js';
+import {DomainError} from './domain.js';
 import {workspaceAction} from './workspace.js';
 export const mutate=onCall({region:'us-central1',maxInstances:3},async request=>{
  try{return await mutateData(request.auth,request.data);}
