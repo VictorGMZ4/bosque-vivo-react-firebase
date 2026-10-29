@@ -16,4 +16,14 @@ Todos los usuarios con sesión disponen de colecciones personales, notificacione
 
 `roles/{uid}` define student, teacher o admin; `profiles/{uid}` contiene datos personales. Solo las Functions escriben estas colecciones. Un rol explícito siempre prevalece sobre el claim administrativo previo; ausencia de rol mantiene compatibilidad con el administrador local original. El administrador no puede modificar su propio rol. Los cambios se reflejan en la sesión por suscripción a Firestore.
 
-Las aprobaciones son dentro de la aplicación; no se enviaron correos ni notificaciones externas. No se implementó eliminación/bloqueo de cuentas ni verificación automática de vinculación académica. Estos flujos funcionan tanto en los emuladores locales como en producción (`flora-viva---bosque-verde`, publicado el 2026-10-22); las cuentas de ambos entornos son independientes.
+## Bloqueo de cuentas
+
+En **Usuarios**, el administrador ve el estado de cada cuenta (Activa o Bloqueada). **Bloquear** exige un motivo de hasta 500 caracteres; **Desbloquear** pide confirmación. Nadie puede bloquear su propia cuenta, por lo que siempre queda al menos un administrador activo.
+
+Al bloquear, la función `workspace` (`setAccountStatus`) marca `disabled` en `roles/{uid}` conservando el rol, deshabilita la cuenta en Authentication y revoca sus sesiones. Como el token vigente de la persona sigue siendo válido hasta una hora, el bloqueo se comprueba también en cada llamada a Functions y en las reglas de Firestore y Storage: una cuenta bloqueada pierde de inmediato todo permiso de profesor o administrador y no puede usar perfil, colecciones, notificaciones, cuestionarios ni propuestas. La sesión abierta se cierra y vuelve a Ingresar con el aviso «Tu cuenta está bloqueada». Cambiar el rol de una cuenta bloqueada no la desbloquea. Cada bloqueo y desbloqueo queda en Historial (entidad `account`) con su motivo; al desbloquear, la persona recibe una notificación.
+
+No hay eliminación de cuentas, para preservar las autorías de propuestas, revisiones e intentos. El bloqueo existe en el código local (2026-10-29); llega a producción solo cuando se publiquen juntos Functions, reglas y frontend.
+
+## Límites
+
+Las aprobaciones son dentro de la aplicación; no se enviaron correos ni notificaciones externas. No hay eliminación de cuentas ni verificación automática de vinculación académica. Estos flujos funcionan tanto en los emuladores locales como en producción (`flora-viva---bosque-verde`, publicado el 2026-10-22); las cuentas de ambos entornos son independientes.

@@ -1,9 +1,10 @@
 rules_version = '2';
 service firebase.storage {
  match /b/{bucket}/o {
-  function admin(){return request.auth != null && (firestore.exists(/databases/(default)/documents/roles/$(request.auth.uid)) ? firestore.get(/databases/(default)/documents/roles/$(request.auth.uid)).data.role == 'admin' : request.auth.token.get('admin', false) == true);}
+  function roleDoc(){return firestore.get(/databases/(default)/documents/roles/$(request.auth.uid)).data;}
+  function admin(){return request.auth != null && (firestore.exists(/databases/(default)/documents/roles/$(request.auth.uid)) ? roleDoc().role == 'admin' && roleDoc().get('disabled', false) != true : request.auth.token.get('admin', false) == true);}
   function published(id){return firestore.get(/databases/(default)/documents/species/$(id)).data.is_published == true;}
-  function teacher(){return request.auth != null && (admin() || (firestore.exists(/databases/(default)/documents/roles/$(request.auth.uid)) && firestore.get(/databases/(default)/documents/roles/$(request.auth.uid)).data.role == 'teacher'));}
+  function teacher(){return request.auth != null && (admin() || (firestore.exists(/databases/(default)/documents/roles/$(request.auth.uid)) && roleDoc().role == 'teacher' && roleDoc().get('disabled', false) != true));}
   match /submissions/{id}/photos/{file} {
    allow read: if request.auth != null && (admin() || firestore.get(/databases/(default)/documents/submissions/$(id)).data.owner_id == request.auth.uid);
    allow create: if resource == null && teacher() && firestore.get(/databases/(default)/documents/submissions/$(id)).data.owner_id == request.auth.uid && firestore.get(/databases/(default)/documents/submissions/$(id)).data.status == 'draft' && request.resource.size <= 8 * 1024 * 1024 && request.resource.contentType.matches('image/(jpeg|png|webp)') && file.matches('[a-zA-Z0-9_-]+[.](jpg|png|webp)');
