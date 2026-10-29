@@ -15,6 +15,7 @@ export async function workspaceAction(auth,input){
  if(['submitSpecies','draftSubmission','submitDraft','reviewSpecies'].includes(action))return moderationAction(auth,input);
  if(['notificationsList','notificationRead'].includes(action))return notificationAction(auth,input);
  if(['historyList','trashList','restoreSpecies'].includes(action))return historyAction(auth,input);
+ if(action==='orphanReport')return (await import('./storage-report.js')).orphanReport(auth);
  if(typeof action==='string'&&action.startsWith('learning'))return (await import('./learning.js')).learningAction(auth,input);
  if(['collectionList','collectionCreate','collectionDelete','favoriteSave','favoriteRemove'].includes(action))return (await import('./collections.js')).collectionsAction(auth,input);
  if(action==='requestTeacher'){

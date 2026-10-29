@@ -38,6 +38,7 @@ test('real CRUD enforces uniqueness, published visibility and protected relation
  await assertSucceeds(getDocs(query(collection(visitor,'species'),where('is_published','==',true))));
  await call({entity:'specimen',action:'delete',id:specimen});await call({entity:'species',action:'delete',id});
  assert.equal((await db.collection('species').doc(id).get()).exists,false);
+ await db.collection('trash').doc(id).delete();
 });
 test('callable rejects anonymous writes',async()=>{
  const anonymous=initializeApp({projectId,apiKey:'demo-key'},'anon');const f=getFunctions(anonymous);connectFunctionsEmulator(f,'127.0.0.1',5001);
@@ -62,7 +63,7 @@ test('Storage protects drafts and rejects uploads by visitors or unsupported typ
   await assert.rejects(uploadBytes(ref(storage,`species/${id}/photos/invalid.txt`),new Uint8Array([1]),{contentType:'text/plain'}),/permission|unauthorized/i);
   await call({entity:'species',action:'update',id,data:{common_name:'QA Storage',scientific_name:'QA Storage '+id,family:'QA',habit:'tree',is_published:true}});
   assert.equal((await getBytes(ref(vs,photo.fullPath))).byteLength,3);
- }finally{await call({entity:'species',action:'delete',id});await deleteApp(visitor);}
+ }finally{await call({entity:'species',action:'delete',id});await bucket.file(photo.fullPath).delete({ignoreNotFound:true});await db.collection('trash').doc(id).delete();await deleteApp(visitor);}
 });
 
 test('3D model is readable only while its species is public; browser uploads are denied',async()=>{
