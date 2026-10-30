@@ -10,7 +10,7 @@ test('teacher model and hotspots remain private until approval, survive correcti
  const data={common_name:'QA Modelo '+suffix,scientific_name:'QA Modelo '+suffix,family:'QA',habit:'herb',is_published:false},hotspots=[{id:'leaf',title:'Hoja de prueba',description:'Texto sintético',position:[0,1,0],normal:[0,1,0]}];let id;
  for(const [a,role]of [[teacher,'teacher'],[admin,'admin'],[student,'student']])await db.collection('roles').doc(a.uid).set({role});
  try{
-  await assert.rejects(workspaceAction(student,{action:'draftSubmission',data}));
+  await assert.rejects(mutateData(student,{entity:'species',action:'create',data}));
   ({id}=await workspaceAction(teacher,{action:'draftSubmission',data}));
   const path=`submissions/${id}/models/qa.glb`;await bucket.file(path).save(readFileSync('public/models/welcome-plant.glb'),{metadata:{contentType:'model/gltf-binary'}});
   await assert.rejects(workspaceAction(teacher,{action:'submitDraft',id,model:{path:'submissions/foreign/models/qa.glb',hotspots,credit:''}}));
@@ -24,7 +24,7 @@ test('teacher model and hotspots remain private until approval, survive correcti
   await workspaceAction(teacher,{action:'submitDraft',id,model:{path,hotspots:revised,credit:'Autor de prueba'}});
   await workspaceAction(admin,{action:'reviewSpecies',id,decision:'approve'});
   let record=(await db.collection('species').doc(id).get()).data();assert.deepEqual(record.model_hotspots,revised);assert.equal(record.model_credit,'Autor de prueba');assert.equal(record.model_3d,`species/${id}/models/qa.glb`);assert.equal((await bucket.file(record.model_3d).exists())[0],true);
-  await assert.rejects(mutateData(teacher,{entity:'species',action:'update',id,data:{...data,model_3d:record.model_3d,model_hotspots:[]}}));
+  await assert.rejects(mutateData(student,{entity:'species',action:'update',id,data:{...data,model_3d:record.model_3d,model_hotspots:[]}}));
   await mutateData(admin,{entity:'species',action:'update',id,data:{...data,model_3d:record.model_3d,model_hotspots:[{...revised[0],position:[1,1,0]}]}});
   record=(await db.collection('species').doc(id).get()).data();assert.deepEqual(record.model_hotspots[0].position,[1,1,0]);
   await mutateData(admin,{entity:'species',action:'update',id,data:{...data,model_3d:''}});

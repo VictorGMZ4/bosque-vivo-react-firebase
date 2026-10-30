@@ -23,7 +23,7 @@ Las mejoras se publicaron desde el commit `3851cb9`. Después se redesplegó el 
 - Vista rápida del catálogo y pasaporte botánico independiente al escanear un QR.
 - Firebase Authentication, perfil privado y roles Estudiante/Visitante, Profesor/Investigador y Admin. Las solicitudes de profesor requieren aprobación; no hay registro público de administradores.
 - Administración de especies y ejemplares con validación en servidor, nombres científicos y códigos únicos, publicación, historial y papelera.
-- Propuestas de profesores con fotografías, modelo 3D, puntos informativos, revisión administrativa, corrección y reenvío; notificaciones internas.
+- Profesores e investigadores publican directamente y editan sus especies; estudiantes proponen especies con fotografías (un envío cada 24 horas), que revisan profesores o administración, con corrección y reenvío; notificaciones internas.
 - Colecciones privadas, comparación de especies y cuestionarios evaluados por el servidor.
 - Plantillas Word/Excel e importación para revisar la información antes de guardarla. [Guía de importación](docs/IMPORTAR-ESPECIES.md).
 - Instalación PWA y guardado de fichas públicas para consulta offline con texto y fotografías. Los modelos 3D requieren conexión.
@@ -48,7 +48,7 @@ Al pulsar «Explora la especie en 3D» comienza la carga del modelo, sin un segu
 
 ## Modelos 3D y puntos manuales
 
-El administrador carga, sustituye o retira GLB desde **Editar especie → Modelo 3D** y puede editar el crédito. El profesor utiliza el editor en su propuesta; el archivo y sus puntos permanecen privados hasta su aprobación. Se aceptan GLB autocontenidos de hasta 30 MB, con validación en cliente y servidor.
+El administrador carga, sustituye o retira GLB desde **Editar especie → Modelo 3D** y puede editar el crédito. El profesor también los gestiona en las especies que registró; en las propuestas (solo de profesores y administradores, no de estudiantes) el archivo y sus puntos permanecen privados hasta su aprobación. Se aceptan GLB autocontenidos de hasta 30 MB, con validación en cliente y servidor.
 
 Para crear un punto, pulsa «Añadir punto informativo», selecciona una superficie del modelo y escribe título y descripción. Se puede recolocar o eliminar; al guardar se conserva en `model_hotspots`. Máximo 30 puntos. Cambiar o retirar el modelo limpia los puntos anteriores previa confirmación.
 

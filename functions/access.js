@@ -7,4 +7,5 @@ export async function roleFor(auth,tx){
  if(snapshot.data()?.disabled===true)fail('Tu cuenta está bloqueada. Contacta con la administración.','permission-denied');
  return snapshot.exists?snapshot.data().role:auth.token?.admin===true?'admin':'student';
 }
+export const owns=(species,uid)=>!!uid&&(species?.created_by===uid||species?.submitted_by===uid);
 export async function requireRole(auth,allowed,tx){const role=await roleFor(auth,tx);if(!allowed.includes(role))fail('Tu rol no permite esta operación.','permission-denied');return role;}

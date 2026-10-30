@@ -21,8 +21,8 @@ test('roles, personal profiles and transactional species moderation',async()=>{
   await assert.rejects(setDoc(doc(student.store,'roles',student.uid),{role:'admin'}));
   await assert.rejects(student.work({action:'listUsers'}));
   await assert.rejects(getDoc(doc(teacher.store,'profiles',student.uid)));
-  await assert.rejects(student.work({action:'submitSpecies',data}));
-  await assert.rejects(teacher.mutate({entity:'species',action:'create',data}));
+  await assert.rejects(student.work({action:'reviewSpecies',id:'qa-none',decision:'approve'}),/rol/);
+  await assert.rejects(student.mutate({entity:'species',action:'create',data}));
   await assert.rejects(teacher.work({action:'submitSpecies',data:{...data,is_published:true}}));
   const proposal=await teacher.work({action:'submitSpecies',data});proposals.push(proposal.id);
   assert.equal((await db.collection('species').doc(proposal.id).get()).exists,false);

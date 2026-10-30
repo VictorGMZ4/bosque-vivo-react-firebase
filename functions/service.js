@@ -1,11 +1,11 @@
 import {FieldValue} from 'firebase-admin/firestore';
 import {db} from './firebase.js';
-import {requireRole} from './access.js';
+import {requireRole,owns} from './access.js';
 import {fail,keyFor,validateSpecies,validateSpecimen,validatePhoto,validateId,validatePath} from './domain.js';
 import {checkModel} from './model-assets.js';
 const collections={species:'species',specimen:'specimens',photo:'photos'};
 export async function mutateData(auth,input){
- await requireRole(auth,['admin']);
+ await requireRole(auth,['admin','teacher']);
  if(!input||!collections[input.entity]||!['create','update','delete'].includes(input.action))fail('Operación no válida.');
  const {entity,action}=input,creating=action==='create',deleting=action==='delete';
  const ref=creating?db.collection(collections[entity]).doc():db.collection(collections[entity]).doc(validateId(input.id));
@@ -15,7 +15,7 @@ export async function mutateData(auth,input){
  if(data?.model_3d&&!new RegExp(`^species/${id}/models/[a-zA-Z0-9_-]+\\.glb$`).test(data.model_3d))fail('El modelo debe pertenecer a esta especie.');
  if(data?.model_3d)await checkModel(data.model_3d);
  await db.runTransaction(async tx=>{
-  await requireRole(auth,['admin'],tx);
+  const role=await requireRole(auth,['admin','teacher'],tx);
   const snapshot=await tx.get(ref),old=snapshot.data();
   if(entity==='species'&&data&&data.model_3d!==undefined&&data.model_3d!==(old?.model_3d||'')&&data.model_hotspots===undefined)data.model_hotspots=[];
   if(!creating&&!snapshot.exists)fail('El registro ya no existe.','not-found');
@@ -23,6 +23,7 @@ export async function mutateData(auth,input){
   const parentRef=db.collection('species').doc(parentId);
   const parent=entity==='species'?snapshot:await tx.get(parentRef);
   if(entity!=='species'&&!parent.exists)fail('La especie ya no existe.','not-found');
+  if(role==='teacher'&&(deleting||!(entity==='species'&&creating)&&!owns(parent.data(),auth.uid)))fail('Solo puedes editar las especies que registraste. Retirar registros corresponde a la administración.','permission-denied');
   if(entity==='photo'&&!deleting)Object.assign(input,{data:validatePhoto(input.data,parentId)});
   const uniqueField=entity==='species'?'scientific_name':entity==='specimen'?'code':null;
   const registry=entity==='species'?'scientific_names':'specimen_codes';
@@ -44,7 +45,7 @@ export async function mutateData(auth,input){
   }else{
    if(uniqueRef)tx.set(uniqueRef,{id});
    const record=entity==='photo'?input.data:data;
-   tx.set(ref,{...old,...record,...(entity!=='species'?{species_id:parentId}:creating?{is_demo:false,specimen_count:0}:{}),updated_at:FieldValue.serverTimestamp(),...(creating?{created_at:FieldValue.serverTimestamp()}: {})});
+   tx.set(ref,{...old,...record,...(entity!=='species'?{species_id:parentId}:creating?{is_demo:false,specimen_count:0,created_by:auth.uid}:{}),updated_at:FieldValue.serverTimestamp(),...(creating?{created_at:FieldValue.serverTimestamp()}: {})});
    if(entity==='specimen'&&creating)tx.update(parentRef,{specimen_count:(parent.data().specimen_count||0)+1,updated_at:FieldValue.serverTimestamp()});
   }
   tx.create(db.collection('audit').doc(),{entity,entity_id:id,action,actor_id:auth.uid,created_at:FieldValue.serverTimestamp(),...(old?{before:old}:{}),...(!deleting?{after:entity==='photo'?input.data:data}:{})});
