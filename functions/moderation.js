@@ -1,7 +1,7 @@
 import {FieldValue,Timestamp} from 'firebase-admin/firestore';
 import {db,bucket} from './firebase.js';
 import {requireRole} from './access.js';
-import {fail,validateId,validateSpecies,keyFor,validateSubmissionModel} from './domain.js';
+import {fail,validateId,validateSpecies,keyFor,validateSubmissionModel,validateLocation,mapPoints} from './domain.js';
 import {notify} from './notifications.js';
 import {checkModel} from './model-assets.js';
 const stamp=()=>FieldValue.serverTimestamp(),day=24*60*60*1000;
@@ -10,7 +10,7 @@ async function studentQuota(tx,uid,note=''){const ref=db.collection('submission_
 function proposalData(input){const data=validateSpecies(input);if(data.is_published||data.photo||data.model_3d)fail('Una propuesta no puede publicar ni enlazar archivos del catálogo.');return data;}
 function photosFor(value,id){if(!Array.isArray(value)||value.length>5)fail('Adjunta hasta cinco fotografías.');return value.map(p=>{
  if(!p||typeof p.path!=='string'||!new RegExp(`^submissions/${id}/photos/[a-zA-Z0-9_-]+\\.(jpg|png|webp)$`).test(p.path))fail('Fotografía no válida.');
- if(typeof p.caption!=='string'||!p.caption.trim()||p.caption.length>240||typeof p.credit!=='string'||p.credit.length>240)fail('Añade descripción y revisa el crédito de las fotografías.');return {path:p.path,caption:p.caption.trim(),credit:p.credit.trim()};
+ if(typeof p.caption!=='string'||!p.caption.trim()||p.caption.length>240||typeof p.credit!=='string'||p.credit.length>240)fail('Añade descripción y revisa el crédito de las fotografías.');const location=validateLocation(p.location);return {path:p.path,caption:p.caption.trim(),credit:p.credit.trim(),...(location?{location}:{})};
  });}
 async function checkFiles(photos){for(const photo of photos){let metadata;try{[metadata]=await bucket.file(photo.path).getMetadata();}catch{fail('Una fotografía no terminó de subirse. Vuelve a intentarlo.');}if(Number(metadata.size)>8*1024*1024||!['image/jpeg','image/png','image/webp'].includes(metadata.contentType))fail('La fotografía debe ser JPG, PNG o WebP de hasta 8 MB.');}}
 export async function moderationAction(auth,input){
@@ -42,7 +42,8 @@ export async function moderationAction(auth,input){
   await db.runTransaction(async tx=>{await requireRole(auth,['admin','teacher'],tx);const current=await tx.get(ref),record=current.data();if(!record||record.status!=='pending'||record.revision!==old.revision)fail('La propuesta cambió; vuelve a cargarla.','failed-precondition');
    if(input.decision==='approve'){
     const unique=db.collection('scientific_names').doc(keyFor(data.scientific_name));if((await tx.get(unique)).exists)fail('Ya existe una especie con ese nombre científico.','already-exists');
-    tx.create(species,{...data,...publishedModel,photo:destinations[0]?.path||'',photo_credit:destinations[0]?.credit||'',is_published:true,is_demo:false,specimen_count:0,submitted_by:record.owner_id,approved_by:auth.uid,created_at:stamp(),updated_at:stamp()});tx.create(unique,{id});
+    const cover={photo:destinations[0]?.path||'',photo_credit:destinations[0]?.credit||'',photo_location:destinations[0]?.location||null};
+    tx.create(species,{...data,...publishedModel,...cover,map_points:mapPoints({...data,...cover},destinations.map((p,index)=>({...p,id:`${id}_${index}`})),[]),is_published:true,is_demo:false,specimen_count:0,submitted_by:record.owner_id,approved_by:auth.uid,created_at:stamp(),updated_at:stamp()});tx.create(unique,{id});
     destinations.forEach((p,index)=>tx.create(db.collection('photos').doc(`${id}_${index}`),{...p,species_id:id,position:index,created_at:stamp(),updated_at:stamp()}));
     tx.create(db.collection('audit').doc(),{entity:'species',entity_id:id,action:'approve',actor_id:auth.uid,created_at:stamp(),after:{...data,...publishedModel,photo:destinations[0]?.path||'',photo_credit:destinations[0]?.credit||'',is_published:true}});
    }

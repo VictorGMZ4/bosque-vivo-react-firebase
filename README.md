@@ -24,6 +24,7 @@ Las mejoras se publicaron desde el commit `3851cb9`. Después se redesplegó el 
 - Firebase Authentication, perfil privado y roles Estudiante/Visitante, Profesor/Investigador y Admin. Las solicitudes de profesor requieren aprobación; no hay registro público de administradores.
 - Administración de especies y ejemplares con validación en servidor, nombres científicos y códigos únicos, publicación, historial y papelera.
 - Profesores e investigadores publican directamente y editan sus especies; estudiantes proponen especies con fotografías (un envío cada 24 horas), que revisan profesores o administración, con corrección y reenvío; notificaciones internas.
+- Mapa de registros (`/mapa/`) y mapa en cada ficha: ubicación de cada foto tomada de su GPS, del dispositivo o marcada a mano; capas satélite y calles sin clave ni facturación.
 - Colecciones privadas, comparación de especies y cuestionarios evaluados por el servidor.
 - Plantillas Word/Excel e importación para revisar la información antes de guardarla. [Guía de importación](docs/IMPORTAR-ESPECIES.md).
 - Instalación PWA y guardado de fichas públicas para consulta offline con texto y fotografías. Los modelos 3D requieren conexión.
@@ -124,6 +125,6 @@ En producción se confirmó el despliegue Ready, acceso al catálogo y cartas, y
 
 El service worker conserva una versión coherente de la aplicación y espera a que se cierren sus pestañas para activar la siguiente. Si aparece la URL antigua, cierra todas las pestañas y ventanas instaladas de Flora Viva, vuelve a abrir y descarga el QR otra vez; una ventana privada ayuda a distinguir caché de errores de publicación.
 
-Quedan pendientes enlaces sociales/contacto definitivos, completar contenido y medios del inventario, pruebas físicas de accesibilidad/escaneo, revisión de App Check y limpieza de archivos huérfanos (existe un informe de solo lectura en Historial y papelera; la cuarentena y el borrado siguen pendientes). No hay mapa ni edición offline. La consulta descarga hasta 1.000 especies y pagina en el cliente; inventarios mayores requieren búsqueda/paginación en servidor. Fotos y registros se guardan en operaciones separadas.
+Quedan pendientes enlaces sociales/contacto definitivos, completar contenido y medios del inventario, pruebas físicas de accesibilidad/escaneo, revisión de App Check y limpieza de archivos huérfanos (existe un informe de solo lectura en Historial y papelera; la cuarentena y el borrado siguen pendientes). No hay edición offline; el mapa necesita conexión y las coordenadas de especies publicadas son públicas. La consulta descarga hasta 1.000 especies y pagina en el cliente; inventarios mayores requieren búsqueda/paginación en servidor. Fotos y registros se guardan en operaciones separadas.
 
 Historial detallado: [BITACORA.md](docs/BITACORA.md). Arquitectura: [ARQUITECTURA.md](docs/ARQUITECTURA.md).

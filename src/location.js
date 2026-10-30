@@ -1,0 +1,4 @@
+// Ubicación de una fotografía: GPS de sus metadatos, del dispositivo o marcada a mano.
+export const sourceLabels={exif:'tomada de la fotografía',device:'del dispositivo',manual:'marcada en el mapa'};
+export async function photoLocation(file){try{const {gps}=await import('exifr');const found=await gps(file);return found&&Number.isFinite(found.latitude)&&Number.isFinite(found.longitude)?{latitude:found.latitude,longitude:found.longitude,source:'exif'}:null;}catch{return null;}}
+export function deviceLocation(){return new Promise((resolve,reject)=>{if(!navigator.geolocation)return reject(Error('Este navegador no permite obtener la ubicación.'));navigator.geolocation.getCurrentPosition(p=>resolve({latitude:p.coords.latitude,longitude:p.coords.longitude,source:'device'}),()=>reject(Error('No se pudo obtener tu ubicación. Revisa el permiso de ubicación del navegador.')),{enableHighAccuracy:true,timeout:15000});});}

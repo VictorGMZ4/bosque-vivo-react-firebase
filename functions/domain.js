@@ -7,14 +7,15 @@ function text(value,label,max,required=false){if(value==null)value='';if(typeof 
 const shortFields={common_name:140,scientific_name:180,family:100,genus:100,order:100,synonyms:240,photo_credit:240,model_credit:240};
 const longFields=['description','morphology','ecology','uses','precautions','references'];
 export function validateSpecies(value){
- object(value,[...Object.keys(shortFields),...longFields,'habit','is_published','photo','model_3d','model_hotspots']);const data={};
+ object(value,[...Object.keys(shortFields),...longFields,'habit','is_published','photo','photo_location','model_3d','model_hotspots']);const data={};
  if(value.model_3d!==undefined)data.model_3d=text(value.model_3d,'Modelo 3D',512);
  if(value.model_hotspots!==undefined){data.model_hotspots=validateHotspots(value.model_hotspots);if(data.model_hotspots.length&&!data.model_3d)fail('Los puntos necesitan un modelo 3D asociado.');}
  for(const [name,max]of Object.entries(shortFields))data[name]=text(value[name],name,max,['common_name','scientific_name','family'].includes(name));
  for(const name of longFields)data[name]=text(value[name],name,20000);
  data.habit=value.habit||'tree';if(!['tree','shrub','herb','palm','climber'].includes(data.habit))fail('Selecciona un tipo de planta válido.');
  if(value.is_published!==undefined&&typeof value.is_published!=='boolean')fail('Visibilidad no válida.');
- data.is_published=value.is_published??false;data.photo=text(value.photo,'Fotografía',512);return data;
+ data.is_published=value.is_published??false;data.photo=text(value.photo,'Fotografía',512);
+ if(!data.photo)data.photo_location=null;else if(value.photo_location!==undefined)data.photo_location=validateLocation(value.photo_location);return data;
 }
 function number(value,label,min,max){if(value==null||value==='')return null;if(!['number','string'].includes(typeof value))fail(`${label}: número no válido.`);const n=Number(value);if(!Number.isFinite(n)||n<min||n>max)fail(`${label}: valor fuera de rango.`);return n;}
 export function validateHotspots(value){
@@ -39,4 +40,15 @@ export function validateSpecimen(value){
 }
 export function validateId(id){if(typeof id!=='string'||!/^[a-zA-Z0-9_-]{1,128}$/.test(id))fail('Identificador no válido.');return id;}
 export function validatePath(path,id){if(path&&!new RegExp(`^species/${validateId(id)}/photos/[a-zA-Z0-9_.-]+\\.(jpg|jpeg|png|webp)$`,'i').test(path))fail('La fotografía debe pertenecer a esta especie.');return path;}
-export function validatePhoto(value,id){object(value,['caption','credit','path','position']);const data={caption:text(value.caption,'Descripción',240,true),credit:text(value.credit,'Crédito',240),path:text(value.path,'Archivo',512,true),position:Number(value.position??0)};validatePath(data.path,id);if(!Number.isInteger(data.position)||data.position<0||data.position>100000)fail('Orden de fotografía no válido.');return data;}
+export function validatePhoto(value,id){object(value,['caption','credit','path','position','location']);const data={caption:text(value.caption,'Descripción',240,true),credit:text(value.credit,'Crédito',240),path:text(value.path,'Archivo',512,true),position:Number(value.position??0)};validatePath(data.path,id);if(!Number.isInteger(data.position)||data.position<0||data.position>100000)fail('Orden de fotografía no válido.');if(value.location!==undefined)data.location=validateLocation(value.location);return data;}
+// Ubicación de una fotografía: undefined conserva la anterior y null la retira.
+export function validateLocation(value){
+ if(value===undefined||value===null)return value;object(value,['latitude','longitude','source']);
+ const latitude=number(value.latitude,'Latitud',-90,90),longitude=number(value.longitude,'Longitud',-180,180);if(latitude===null||longitude===null)fail('Completa la ubicación o retírala.');
+ if(!['exif','device','manual'].includes(value.source))fail('Origen de ubicación no válido.');return {latitude:Math.round(latitude*1e6)/1e6,longitude:Math.round(longitude*1e6)/1e6,source:value.source};
+}
+// Resumen público de puntos del mapa: foto principal, galería (sin repetir la principal) y ejemplares con coordenadas.
+export function mapPoints(species,photos,specimens){
+ const point=(type,id,location,extra)=>location&&Number.isFinite(location.latitude)&&Number.isFinite(location.longitude)?{type,id,latitude:location.latitude,longitude:location.longitude,...extra}:null;
+ return [point('photo','main',species?.photo&&species.photo_location,{path:species?.photo||'',caption:species?.common_name||''}),...photos.filter(p=>p.path!==species?.photo).map(p=>point('photo',p.id,p.location,{path:p.path,caption:p.caption||''})),...specimens.map(s=>point('specimen',s.id,s.latitude!=null&&s.longitude!=null?{latitude:s.latitude,longitude:s.longitude}:null,{path:'',caption:[s.code,s.zone].filter(Boolean).join(' · ')}))].filter(Boolean).slice(0,500);
+}

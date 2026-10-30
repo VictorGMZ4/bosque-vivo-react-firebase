@@ -7,15 +7,17 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "node --test tests/domain.test.mjs tests/offline.test.mjs tests/qr-url.test.mjs tests/campus-scene.test.mjs tests/species-import.test.mjs tests/hotspots.test.mjs tests/hotspot-callout.test.mjs",
+    "test": "node --test tests/domain.test.mjs tests/offline.test.mjs tests/qr-url.test.mjs tests/campus-scene.test.mjs tests/species-import.test.mjs tests/hotspots.test.mjs tests/hotspot-callout.test.mjs tests/map.test.mjs",
     "test:integration": "node scripts/run-local.mjs test",
     "emulators": "node scripts/start-emulators.mjs",
     "import:local": "node scripts/run-local.mjs import"
   },
   "dependencies": {
     "@google/model-viewer": "^4.3.1",
+    "exifr": "7.1.3",
     "fflate": "^0.8.3",
     "firebase": "^12.0.0",
+    "leaflet": "1.9.4",
     "qrcode": "^1.5.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

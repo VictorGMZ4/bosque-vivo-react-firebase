@@ -9,7 +9,7 @@ import {Icon} from './ui/Icon';
 export function SiteHeader({welcome=false}){
  const {user,ready,admin,teacher}=useAuth(),[busy,setBusy]=useState(false),[error,setError]=useState('');
  async function leave(){setBusy(true);setError('');try{await signOut(auth);}catch(e){setError(messageFor(e));}finally{setBusy(false);}}
- const tools=[['/comparar/','compare','Comparar especies'],['/aprender/','book','Aprender'],...(user?[['/mi-coleccion/','heart','Mi colección'],['/notificaciones/','bell','Notificaciones']]:[]),...(admin?[['/historial/','history','Historial y papelera']]:[])];
+ const tools=[['/mapa/','map','Mapa'],['/comparar/','compare','Comparar especies'],['/aprender/','book','Aprender'],...(user?[['/mi-coleccion/','heart','Mi colección'],['/notificaciones/','bell','Notificaciones']]:[]),...(admin?[['/historial/','history','Historial y papelera']]:[])];
  return <><header className={`site-header${welcome?' welcome-header':''}`}><div className="shell primary-bar">
   <Link className="brand" to="/" aria-label="Flora Viva · Inicio"><span className="brand-mark"><img src="/images/brand-flower-outlined.webp" alt="" width="44" height="44"/></span><span>Flora Viva<small>BOSQUE VERDE · UNIPAZ</small></span></Link>
   {!welcome&&<><nav className="primary-links" aria-label="Navegación principal"><NavLink to="/catalogo/">Colección</NavLink>{admin&&<NavLink to="/gestion/">Administración</NavLink>}{teacher&&<NavLink to="/gestion/">Mis especies</NavLink>}{user&&<NavLink to="/propuestas/">{admin||teacher?'Revisiones':'Mis propuestas'}</NavLink>}{admin&&<NavLink to="/usuarios/">Usuarios</NavLink>}</nav>

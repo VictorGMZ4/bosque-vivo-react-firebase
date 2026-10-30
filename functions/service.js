@@ -1,7 +1,7 @@
 import {FieldValue} from 'firebase-admin/firestore';
 import {db} from './firebase.js';
 import {requireRole,owns} from './access.js';
-import {fail,keyFor,validateSpecies,validateSpecimen,validatePhoto,validateId,validatePath} from './domain.js';
+import {fail,keyFor,validateSpecies,validateSpecimen,validatePhoto,validateId,validatePath,mapPoints} from './domain.js';
 import {checkModel} from './model-assets.js';
 const collections={species:'species',specimen:'specimens',photo:'photos'};
 export async function mutateData(auth,input){
@@ -36,6 +36,12 @@ export async function mutateData(auth,input){
    photos=await tx.get(db.collection('photos').where('species_id','==',id));
    if(photos.size>400)fail('La galería requiere una eliminación por lotes.','failed-precondition');
   }
+  let points;
+  if(!(entity==='species'&&deleting)){
+   const current={...old,...(deleting?{}:entity==='photo'?input.data:data)},siblings=entity==='species'&&creating?[null,null]:await Promise.all(['photos','specimens'].map(name=>tx.get(db.collection(name).where('species_id','==',parentId))));
+   const rows=(found,name)=>{const map=new Map((found?.docs||[]).map(d=>[d.id,d.data()]));if(collections[entity]===name){if(deleting)map.delete(id);else map.set(id,current);}return [...map].map(([key,row])=>({id:key,...row}));};
+   points=mapPoints(entity==='species'?current:parent.data(),rows(siblings[0],'photos'),rows(siblings[1],'specimens'));
+  }
   if(uniqueField&&old&&(deleting||keyFor(old[uniqueField])!==keyFor(data[uniqueField])))tx.delete(db.collection(registry).doc(keyFor(old[uniqueField])));
   if(deleting){
    if(entity==='species')tx.set(db.collection('trash').doc(id),{record:old,photos:photos.docs.map(p=>({id:p.id,data:p.data()})),actor_id:auth.uid,deleted_at:FieldValue.serverTimestamp()});
@@ -48,6 +54,7 @@ export async function mutateData(auth,input){
    tx.set(ref,{...old,...record,...(entity!=='species'?{species_id:parentId}:creating?{is_demo:false,specimen_count:0,created_by:auth.uid}:{}),updated_at:FieldValue.serverTimestamp(),...(creating?{created_at:FieldValue.serverTimestamp()}: {})});
    if(entity==='specimen'&&creating)tx.update(parentRef,{specimen_count:(parent.data().specimen_count||0)+1,updated_at:FieldValue.serverTimestamp()});
   }
+  if(points)tx.update(entity==='species'?ref:parentRef,{map_points:points});
   tx.create(db.collection('audit').doc(),{entity,entity_id:id,action,actor_id:auth.uid,created_at:FieldValue.serverTimestamp(),...(old?{before:old}:{}),...(!deleting?{after:entity==='photo'?input.data:data}:{})});
  });
  return {id};
