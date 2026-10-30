@@ -5,6 +5,7 @@ import {FieldValue} from 'firebase-admin/firestore';
 import {db,authAdmin} from './firebase.js';
 import {fail,validateId,validateSpecies,keyFor} from './domain.js';
 import {requireRole,roleFor,roles} from './access.js';
+import {peopleFor} from './people.js';
 const stamp=()=>FieldValue.serverTimestamp();
 function text(value,max,required=false){if(typeof value!=='string'||value.trim().length>max||(required&&!value.trim()))fail('Revisa los campos obligatorios y su longitud.');return value.trim();}
 export async function workspaceAction(auth,input){
@@ -15,6 +16,11 @@ export async function workspaceAction(auth,input){
  if(['submitSpecies','draftSubmission','submitDraft','reviewSpecies'].includes(action))return moderationAction(auth,input);
  if(['notificationsList','notificationRead'].includes(action))return notificationAction(auth,input);
  if(['historyList','trashList','restoreSpecies'].includes(action))return historyAction(auth,input);
+ if(action==='submissionAuthors'){
+  await requireRole(auth,['admin']);if(!Array.isArray(input.ids)||input.ids.length>500)fail('Solicitud inválida.');const ids=[...new Set(input.ids.map(validateId))];
+  const owners=ids.length?(await db.getAll(...ids.map(id=>db.collection('submissions').doc(id)))).map(s=>s.data()?.owner_id):[];const people=await peopleFor(owners);
+  return {authors:Object.fromEntries(owners.filter(Boolean).map(uid=>[uid,people[uid]]))};
+ }
  if(action==='orphanReport')return (await import('./storage-report.js')).orphanReport(auth);
  if(typeof action==='string'&&action.startsWith('learning'))return (await import('./learning.js')).learningAction(auth,input);
  if(['collectionList','collectionCreate','collectionDelete','favoriteSave','favoriteRemove'].includes(action))return (await import('./collections.js')).collectionsAction(auth,input);
