@@ -1,10 +1,9 @@
 .home-layout{--campus-white:#fffdf0}
 .home-layout>main.shell{width:100%;max-width:none}
 .home-layout>.site-header{position:absolute;inset:0 0 auto;z-index:4;background:linear-gradient(#0b201de6,#0b201d55,transparent);border-top:0;color:var(--campus-white)}
-.home-layout .site-header .brand,.home-layout .site-header .primary-links a,.home-layout .site-header .tool-links a,.home-layout .site-header .profile-link,.home-layout .site-header .session-exit{color:var(--campus-white)}
-.home-layout .site-header .tools-bar{background:transparent;border-color:#ffffff25}
+.home-layout .site-header .brand,.home-layout .site-header .primary-links a,.home-layout .site-header .profile-link,.home-layout .site-header .session-exit{color:var(--campus-white)}
 .home-layout .site-header .access-link{background:#fffdf012;border-color:#ffffff66;color:var(--campus-white)}
-.home-layout .site-header .primary-links a.active,.home-layout .site-header .tool-links a.active{background:#ffffff20;color:var(--campus-white)}
+.home-layout .site-header .primary-links a.active{background:#ffffff20;color:var(--campus-white)}
 .home-layout .site-header a:hover,.home-layout .site-header button:hover{color:var(--campus-white);background-color:#ffffff18}
 .home-layout>.local-banner{position:absolute;top:145px;left:0;right:0;z-index:4;background:#172e27cc;color:#fffdf0;border:0;font-size:11px}
 .campus-welcome{position:relative;isolation:isolate;min-height:820px;min-height:max(680px,100svh);display:grid;place-items:center;overflow:hidden;padding:180px 30px 120px!important;background:#183827;animation:none!important;color:var(--campus-white)}
@@ -35,9 +34,6 @@
  .home-layout .site-header .brand-mark{width:30px;height:30px}
  .home-layout .site-header .access-link{font-size:11px;padding:9px 10px;gap:8px}
  .home-layout .site-header .access-link .ui-icon{width:14px}
- .home-layout .site-header .tools-inner{flex-wrap:nowrap;gap:8px;padding-bottom:0}
- .home-layout .site-header .tool-links{width:auto;flex:1;scrollbar-width:none}
- .home-layout .site-header .tool-links::-webkit-scrollbar{display:none}
  .home-layout .site-header .primary-links{padding-bottom:3px}
  .campus-welcome{min-height:max(800px,100svh);padding:235px 24px 155px!important}
  .campus-kicker{font-size:9px;letter-spacing:.16em;max-width:240px;margin:0 auto 24px}
@@ -51,9 +47,8 @@
 }
 @media(prefers-reduced-motion:reduce){.campus-canvas{transition:none}.campus-explore{transition:none}.campus-explore:active{transform:none}}
 
-.home-layout .site-header .install-app>.button{color:#fffdf0;border-color:#ffffff66}
+
 .home-layout .site-header .profile-link{background:#ffffff18;border-color:#ffffff40}
-.home-layout .site-header .tool-links .ui-icon{color:#dce9cb}
 
 .campus-copy{transition:opacity 240ms ease,transform 320ms cubic-bezier(.22,1,.36,1)}
 .campus-copy.is-leaving{opacity:0;transform:translateY(-12px);pointer-events:none}

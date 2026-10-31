@@ -102,7 +102,7 @@ if (typeof window !== 'undefined') {
   window.addEventListener('appinstalled', () => {installPrompt = undefined; window.dispatchEvent(new Event('flora-install-ready'));});
 }
 
-export function InstallApp() {
+export function InstallApp({iconOnly=false,icon}={}) {
   const [available, setAvailable] = useState(Boolean(installPrompt));
   const [instructions, setInstructions] = useState(false);
   const [standalone, setStandalone] = useState(() => typeof window !== 'undefined' && (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true));
@@ -118,7 +118,7 @@ export function InstallApp() {
     try {await prompt.prompt(); await prompt.userChoice;} catch {setInstructions(true);}
   }
   return h('div', {className:'install-app'},
-    h('button', {type:'button', className:'button outline small', onClick:install, 'aria-expanded':instructions}, available ? 'Instalar Flora Viva' : 'Cómo instalar'),
+    h('button', {type:'button', className:'button outline small', onClick:install, 'aria-expanded':instructions, 'aria-label':iconOnly?(available?'Instalar Flora Viva':'Cómo instalar'):undefined, title:iconOnly?(available?'Instalar Flora Viva':'Cómo instalar'):undefined}, icon, !iconOnly && h('span',null,available ? 'Instalar Flora Viva' : 'Cómo instalar')),
     instructions && h('p', {className:'notice', role:'status'}, /iPad|iPhone|iPod/.test(navigator.userAgent) ? 'En Safari, toca Compartir → Añadir a pantalla de inicio. Abre la aplicación y guarda las fichas que quieras consultar sin conexión.' : 'Abre el menú del navegador y busca «Instalar aplicación» o «Añadir a pantalla de inicio». Si no aparece, sigue usando la web y guarda tus fichas desde cada especie.'));
 }
 
