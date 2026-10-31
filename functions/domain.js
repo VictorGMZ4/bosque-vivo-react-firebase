@@ -32,9 +32,10 @@ export function validateSubmissionModel(value,id){
  if(!new RegExp(`^submissions/${id}/models/[a-zA-Z0-9_-]+\\.glb$`).test(path))fail('El modelo debe pertenecer a esta propuesta.');
  return {path,credit:text(value.credit,'Crédito del modelo',240),hotspots:validateHotspots(value.hotspots||[])};
 }
-export function validateSpecimen(value){
- object(value,['code','zone','latitude','longitude','height','observed_on','notes']);
- const data={code:text(value.code,'Código',40,true),zone:text(value.zone,'Zona',140,true),latitude:number(value.latitude,'Latitud',-90,90),longitude:number(value.longitude,'Longitud',-180,180),height:number(value.height,'Altura',0,9999.99),observed_on:text(value.observed_on,'Fecha',10),notes:text(value.notes,'Observaciones',20000)};
+export function specimenCode(name,n){const prefix=name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z]/g,'').slice(0,3);return `${prefix.length===3?prefix:'EJM'}-${String(n).padStart(3,'0')}`;}
+export function validateSpecimen(value,codeRequired=true){
+ object(value,['code','zone','latitude','longitude','height','observed_on','notes','photo']);
+ const data={code:text(value.code,'Código',40,codeRequired),zone:text(value.zone,'Zona',140),photo:text(value.photo,'Foto',512),latitude:number(value.latitude,'Latitud',-90,90),longitude:number(value.longitude,'Longitud',-180,180),height:number(value.height,'Altura',0,9999.99),observed_on:text(value.observed_on,'Fecha',10),notes:text(value.notes,'Observaciones',20000)};
  if((data.latitude===null)!==(data.longitude===null))fail('Completa ambas coordenadas o deja ambas vacías.');
  if(data.observed_on&&(!/^\d{4}-\d{2}-\d{2}$/.test(data.observed_on)||isNaN(Date.parse(data.observed_on))||new Date(data.observed_on).toISOString().slice(0,10)!==data.observed_on))fail('Fecha de observación no válida.');return data;
 }
@@ -50,5 +51,5 @@ export function validateLocation(value){
 // Resumen público de puntos del mapa: foto principal, galería (sin repetir la principal) y ejemplares con coordenadas.
 export function mapPoints(species,photos,specimens){
  const point=(type,id,location,extra)=>location&&Number.isFinite(location.latitude)&&Number.isFinite(location.longitude)?{type,id,latitude:location.latitude,longitude:location.longitude,...extra}:null;
- return [point('photo','main',species?.photo&&species.photo_location,{path:species?.photo||'',caption:species?.common_name||''}),...photos.filter(p=>p.path!==species?.photo).map(p=>point('photo',p.id,p.location,{path:p.path,caption:p.caption||''})),...specimens.map(s=>point('specimen',s.id,s.latitude!=null&&s.longitude!=null?{latitude:s.latitude,longitude:s.longitude}:null,{path:'',caption:[s.code,s.zone].filter(Boolean).join(' · ')}))].filter(Boolean).slice(0,500);
+ return [point('photo','main',species?.photo&&species.photo_location,{path:species?.photo||'',caption:species?.common_name||''}),...photos.filter(p=>p.path!==species?.photo).map(p=>point('photo',p.id,p.location,{path:p.path,caption:p.caption||''})),...specimens.map(s=>point('specimen',s.id,s.latitude!=null&&s.longitude!=null?{latitude:s.latitude,longitude:s.longitude}:null,{path:s.photo||'',caption:[s.code,s.zone].filter(Boolean).join(' · ')}))].filter(Boolean).slice(0,500);
 }

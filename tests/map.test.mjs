@@ -1,6 +1,24 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {validateLocation,validatePhoto,validateSpecies,mapPoints} from '../functions/domain.js';
+import * as domain from '../functions/domain.js';
+const {validateLocation,validatePhoto,validateSpecies,mapPoints,validateSpecimen}=domain;
+
+test('specimen codes normalize accents, skip nonletters and fall back for short names',()=>{
+ assert.equal(typeof domain.specimenCode,'function');
+ for(const [name,n,expected]of [['Árbol nomeolvides',1,'ARB-001'],[' 12 G-í.rasol',2,'GIR-002'],['Sol',9,'SOL-009'],['Ár',1,'EJM-001'],['123',12,'EJM-012'],['',1000,'EJM-1000']])assert.equal(domain.specimenCode(name,n),expected);
+});
+
+test('specimens accept an optional zone and photo while preserving code and coordinate validation',()=>{
+ const data=validateSpecimen({code:'A-001',photo:'species/a/photos/a.jpg'});
+ assert.equal(data.zone,'');assert.equal(data.photo,'species/a/photos/a.jpg');assert.equal(data.latitude,null);
+ assert.throws(()=>validateSpecimen({}));assert.equal(validateSpecimen({},false).code,'');
+ assert.throws(()=>validateSpecimen({code:'A',zone:'x'.repeat(141)}));assert.throws(()=>validateSpecimen({code:'A',latitude:7}));
+});
+
+test('specimen map points include their photo or an empty path',()=>{
+ const points=mapPoints({},[],[{id:'a',photo:'species/a/photos/a.jpg',latitude:7,longitude:-73},{id:'b',latitude:7,longitude:-73}]);
+ assert.deepEqual(points.map(p=>p.path),['species/a/photos/a.jpg','']);
+});
 
 test('photo locations are validated, rounded and optional',()=>{
  assert.equal(validateLocation(undefined),undefined);assert.equal(validateLocation(null),null);

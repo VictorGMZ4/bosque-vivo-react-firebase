@@ -15,4 +15,5 @@
 .taxonomy.taxonomy-tiles{gap:10px;margin:24px 0}
 .taxonomy.taxonomy-tiles>div{padding:14px 16px;border-top:0;border-radius:12px;background:#eef2e6}
 .taxonomy.taxonomy-tiles dd{margin:4px 0 0}
+.specimen-card-photo{display:block;width:calc(100% + 56px);max-width:none;height:180px;margin:-28px -28px 16px;border-radius:16px 16px 0 0;object-fit:cover}.specimen-form>label:first-child{margin-bottom:14px}.specimen-preview{display:block;width:100%;max-width:420px;max-height:320px;margin:0 0 16px;border-radius:14px;object-fit:cover}.specimen-more{margin:6px 0 22px;padding:14px 16px;border-radius:12px;background:#f1f4ea}.specimen-more summary{min-height:44px;display:flex;align-items:center;font-weight:600;cursor:pointer}.specimen-more[open] summary{margin-bottom:12px}
 @media(prefers-reduced-motion:reduce){.catalog-tile img{transition:none}}

@@ -1,7 +1,7 @@
 import {FieldValue} from 'firebase-admin/firestore';
 import {db} from './firebase.js';
 import {requireRole,owns} from './access.js';
-import {fail,keyFor,validateSpecies,validateSpecimen,validatePhoto,validateId,validatePath,mapPoints} from './domain.js';
+import {fail,keyFor,specimenCode,validateSpecies,validateSpecimen,validatePhoto,validateId,validatePath,mapPoints} from './domain.js';
 import {checkModel} from './model-assets.js';
 const collections={species:'species',specimen:'specimens',photo:'photos'};
 export async function mutateData(auth,input){
@@ -10,7 +10,8 @@ export async function mutateData(auth,input){
  const {entity,action}=input,creating=action==='create',deleting=action==='delete';
  const ref=creating?db.collection(collections[entity]).doc():db.collection(collections[entity]).doc(validateId(input.id));
  const id=ref.id;
- const data=deleting?null:entity==='species'?validateSpecies(input.data):entity==='specimen'?validateSpecimen(input.data):null;
+ const data=deleting?null:entity==='species'?validateSpecies(input.data):entity==='specimen'?validateSpecimen(input.data,!creating):null;
+ const autoCode=entity==='specimen'&&creating&&!data.code;
  if(entity==='species'&&data)validatePath(data.photo,id);
  if(data?.model_3d&&!new RegExp(`^species/${id}/models/[a-zA-Z0-9_-]+\\.glb$`).test(data.model_3d))fail('El modelo debe pertenecer a esta especie.');
  if(data?.model_3d)await checkModel(data.model_3d);
@@ -25,6 +26,10 @@ export async function mutateData(auth,input){
   if(entity!=='species'&&!parent.exists)fail('La especie ya no existe.','not-found');
   if(role==='teacher'&&(deleting||!(entity==='species'&&creating)&&!owns(parent.data(),auth.uid)))fail('Solo puedes editar las especies que registraste. Retirar registros corresponde a la administración.','permission-denied');
   if(entity==='photo'&&!deleting)Object.assign(input,{data:validatePhoto(input.data,parentId)});
+  if(entity==='specimen'&&!deleting){
+   validatePath(data.photo,parentId);
+   if(autoCode){data.code='';for(let attempt=0,n=(parent.data().specimen_count||0)+1;attempt<50;attempt++,n++){const code=specimenCode(parent.data().common_name,n);if(!(await tx.get(db.collection('specimen_codes').doc(keyFor(code)))).exists){data.code=code;break;}}if(!data.code)fail('No se pudo asignar un código único al ejemplar. Vuelve a intentarlo o contacta con la administración.','failed-precondition');}
+  }
   const uniqueField=entity==='species'?'scientific_name':entity==='specimen'?'code':null;
   const registry=entity==='species'?'scientific_names':'specimen_codes';
   const uniqueRef=uniqueField&&!deleting?db.collection(registry).doc(keyFor(data[uniqueField])):null;

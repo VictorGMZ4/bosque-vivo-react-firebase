@@ -5,7 +5,7 @@ Firestore se organiza en colecciones con identificadores string. Las especies im
 | Colección | Campos y función |
 |---|---|
 | species | common_name, scientific_name, family, genus, order, synonyms, habit, description, morphology, ecology, uses, precautions, references, photo, photo_credit, model_3d, model_credit, model_hotspots, is_published, is_demo, specimen_count, created_at, updated_at; datos históricos legacy_photo/legacy_model_3d al importar |
-| specimens | species_id, code, zone, latitude, longitude, height, observed_on, notes y timestamps para registros nuevos |
+| specimens | species_id, code (se genera solo al registrar desde foto: tres letras del nombre común y un consecutivo, p. ej. GIR-001), photo (ruta en species/{id}/photos/), zone (opcional), latitude, longitude, height, observed_on, notes y timestamps para registros nuevos |
 | photos | species_id, path, caption, credit, position y timestamps para registros nuevos |
 | scientific_names | SHA-256 del nombre normalizado como ID; campo id con propietario species |
 | specimen_codes | SHA-256 del código normalizado como ID; campo id con propietario specimens |
