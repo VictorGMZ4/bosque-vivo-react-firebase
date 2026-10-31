@@ -1,0 +1,18 @@
+/* Catálogo y ficha: primer pantallazo protagonista (revisión taste-skill, 2026-10-31). Usa la escala --step-* con valores de respaldo. */
+.catalog-lead{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:clamp(28px,4vw,64px);align-items:center;padding:clamp(24px,4vw,48px) 0 clamp(56px,7vw,112px)}
+.catalog-lead h1{max-width:16ch;margin:0 0 20px;font-size:clamp(44px,5.2vw,80px);line-height:.98;letter-spacing:-.03em}
+.catalog-lead-copy>p{max-width:34ch;margin:0 0 28px;color:var(--ink);font-size:var(--step-1,22px);line-height:1.45}
+.catalog-mosaic{display:grid;grid-template-columns:1.3fr 1fr;grid-template-rows:1fr 1fr;gap:12px;aspect-ratio:1.15}
+.catalog-mosaic.count-1{grid-template-columns:1fr;grid-template-rows:1fr}.catalog-mosaic.count-2{grid-template-columns:1fr 1fr;grid-template-rows:1fr}.catalog-mosaic.count-3 .catalog-tile:first-child{grid-row:span 2}
+.catalog-tile{position:relative;display:block;overflow:hidden;border-radius:18px;background:#e9eddf;color:#fff;text-decoration:none}
+.catalog-tile img{display:block;width:100%;height:100%;object-fit:cover;transition:transform 300ms var(--ease-out)}
+.catalog-tile span{position:absolute;left:14px;bottom:12px;padding:6px 12px;border-radius:30px;background:#10261bcc;font-size:var(--step--1,14px);font-weight:600}
+.catalog-tile:focus-visible{outline:3px solid #8c6517;outline-offset:3px}
+@media(hover:hover) and (pointer:fine){.catalog-tile:hover img{transform:scale(1.03)}}
+@media(max-width:768px){.catalog-lead{grid-template-columns:minmax(0,1fr)}.catalog-lead h1{max-width:none}.catalog-mosaic{aspect-ratio:1.4}}
+.species-detail .detail-hero h1{margin:0 0 8px;font-size:var(--step-3,clamp(44px,6.5vw,96px));line-height:.98;letter-spacing:-.03em}
+.detail-summary{margin:4px 0 20px;color:var(--ink);font-size:var(--step-1,22px);line-height:1.4}
+.taxonomy.taxonomy-tiles{gap:10px;margin:24px 0}
+.taxonomy.taxonomy-tiles>div{padding:14px 16px;border-top:0;border-radius:12px;background:#eef2e6}
+.taxonomy.taxonomy-tiles dt{color:var(--muted);font-size:var(--step--1,14px)}.taxonomy.taxonomy-tiles dd{margin:4px 0 0;color:var(--ink);font-size:var(--step-0,17px)}
+@media(prefers-reduced-motion:reduce){.catalog-tile img{transition:none}}

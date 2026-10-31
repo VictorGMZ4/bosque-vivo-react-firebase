@@ -1,5 +1,5 @@
 .qr-share-section{display:block;padding:40px 0;margin:30px 0;scroll-margin-top:180px;border-top:1px solid #d6dfca}
-.qr-share-copy{max-width:850px;margin-bottom:30px}.qr-share-copy h2{font-size:clamp(30px,3vw,42px)}.qr-share-copy h2 em{font-style:normal;color:#647b4d}.qr-share-copy>p{color:var(--muted);max-width:650px}.qr-share-copy .actions{margin:24px 0 0}
+.qr-share-copy{max-width:850px;margin-bottom:30px}.qr-share-copy h2{font-size:var(--step-2)}.qr-share-copy h2 em{font-style:normal;color:#647b4d}.qr-share-copy>p{color:var(--ink);max-width:650px}.qr-share-copy .actions{margin:24px 0 0}
 .qr-preview{width:100%;max-width:1050px;margin:auto;container:qr-preview/inline-size}
 .species-qr-label{position:relative;display:grid;grid-template-columns:minmax(0,1.95fr) minmax(0,1fr);width:100%;min-height:57.15cqw;min-width:0;container-type:inline-size;overflow:hidden;border-radius:20px;box-shadow:0 12px 32px #173b251c;background:#063d29;color:#fffdf1;isolation:isolate;text-align:left;overflow-wrap:anywhere;font-family:'Segoe UI',Arial,sans-serif;print-color-adjust:exact;-webkit-print-color-adjust:exact}
 .qr-card-story{position:relative;isolation:isolate;display:flex;flex-direction:column;min-width:0;padding:3.2cqw 3.4cqw 3.5cqw;gap:2.8cqw;color:#fffdf1}

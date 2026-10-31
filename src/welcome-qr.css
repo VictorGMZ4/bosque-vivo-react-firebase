@@ -1,17 +1,17 @@
 @layer components {
  .catalog-hero{padding-top:32px;gap:48px;grid-template-columns:1fr 1fr}
  .welcome-model{min-width:0;width:100%;border-radius:22px;background:#edf1e5;border:1px solid #d9e2cd;overflow:hidden;position:relative}
- .welcome-model-tag{position:absolute;z-index:1;left:22px;top:18px;padding:5px 10px;border-radius:20px;background:#fffef9ed;color:#526640;font-size:9px;letter-spacing:1.5px;pointer-events:none}
+ .welcome-model-tag{position:absolute;z-index:1;left:22px;top:18px;padding:5px 10px;border-radius:20px;background:#fffef9ed;color:var(--green);font-size:var(--step--1);letter-spacing:.01em;pointer-events:none;text-transform:none;font-weight:600}
  .welcome-model-stage{height:380px;position:relative;background:radial-gradient(ellipse at center,#f7f8f0,#dee7cf)}
  .welcome-model-stage model-viewer{width:100%;height:100%;display:block;position:relative;transition:opacity 200ms ease}
  .welcome-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
- .welcome-loading{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);padding:8px 14px;background:#fffef9ed;border-radius:20px;font-size:12px;white-space:nowrap}
+ .welcome-loading{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);padding:8px 14px;background:#fffef9ed;border-radius:20px;font-size:var(--step--1);white-space:nowrap}
  .welcome-load{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
  .welcome-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;border-top:1px solid #d6dfca;flex-wrap:wrap}
- .welcome-controls p{font-size:12px;color:#536445;margin:0}
- .welcome-controls .button{font-size:11px;min-height:40px;padding:8px 12px}
- .welcome-feedback{padding:16px;font-size:13px}
- .welcome-credit{font-size:10px;color:#5c6d4e;padding:0 20px 14px;margin:0}
+ .welcome-controls p{font-size:var(--step-0);color:var(--ink);margin:0}
+ .welcome-controls .button{font-size:var(--step--1);min-height:40px;padding:8px 12px}
+ .welcome-feedback{padding:16px;font-size:var(--step--1)}
+ .welcome-credit{font-size:var(--step--1);color:#5c6d4e;padding:0 20px 14px;margin:0}
  @media(max-width:900px){.catalog-hero{gap:24px}.welcome-model-stage{height:330px}}
  @media(max-width:600px){.catalog-hero{grid-template-columns:1fr}.welcome-model-stage{height:340px}}
  @media(prefers-reduced-motion:reduce){.welcome-model-stage model-viewer{transition:none}}
