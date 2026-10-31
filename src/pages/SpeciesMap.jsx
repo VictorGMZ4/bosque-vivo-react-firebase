@@ -1,3 +1,4 @@
+import {LoadingState} from '../LoadingState';
 import React,{useEffect,useRef,useState} from 'react';
 import {listSpecies,habits,normalize} from '../data';
 import {messageFor} from '../firebase';
@@ -42,7 +43,7 @@ export function SpeciesMap(){
    <h2 className="map-group">Tipo de planta</h2>
    <div className="map-filters">{[['all','Todas'],...Object.entries(habits)].map(([value,label])=>filter(value,habit,setHabit,label,(plants||[]).filter(p=>value==='all'||p.habit===value).length,<HabitMark habit={value==='all'?'leaf':value}/>))}</div>
    <h2 className="map-group">Especies <span className="map-count">{shown.length}</span></h2>
-   <ul className="map-species" ref={list}>{shown.map(p=><li key={p.id}><button type="button" data-id={p.id} className={selected===p.id?'is-active':''} aria-pressed={selected===p.id} onClick={()=>choose(p)}><StorageImage path={p.photo} alt=""/><span className="map-species-text"><strong>{p.common_name}</strong><em>{p.scientific_name}</em><span className="map-tags"><span className="map-tag habit"><HabitMark habit={p.habit}/>{habits[p.habit]||'Planta'}</span>{p.family&&<span className="map-tag">{p.family}</span>}</span></span><span className="map-count">{visible.filter(v=>v.speciesId===p.id).length}</span></button></li>)}</ul>
+   {plants===null&&<LoadingState variant="list" label="Cargando registros…"/>}<ul className="map-species" ref={list}>{shown.map(p=><li key={p.id}><button type="button" data-id={p.id} className={selected===p.id?'is-active':''} aria-pressed={selected===p.id} onClick={()=>choose(p)}><StorageImage path={p.photo} alt=""/><span className="map-species-text"><strong>{p.common_name}</strong><em>{p.scientific_name}</em><span className="map-tags"><span className="map-tag habit"><HabitMark habit={p.habit}/>{habits[p.habit]||'Planta'}</span>{p.family&&<span className="map-tag">{p.family}</span>}</span></span><span className="map-count">{visible.filter(v=>v.speciesId===p.id).length}</span></button></li>)}</ul>
    {plants&&!shown.length&&<p className="empty">{all.length?'Ninguna especie coincide con los filtros.':'Aún no hay fotografías ni ejemplares con ubicación.'}</p>}
   </aside>
   <button type="button" className="map-toggle" onClick={()=>setPanel(!panel)} aria-expanded={panel} aria-label={panel?'Ocultar el panel de especies':'Mostrar el panel de especies'}><Icon name="chevron"/></button>

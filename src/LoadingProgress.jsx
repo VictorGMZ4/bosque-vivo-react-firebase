@@ -1,0 +1,5 @@
+import React,{useEffect,useLayoutEffect,useState} from 'react';
+import {start,finish,usePending,useSlow} from './loading';
+import {LoadingState} from './LoadingState';
+export function RouteLoading(){useEffect(()=>{start();return finish;},[]);return <LoadingState variant="page" label="Cargando pantalla…"/>;}
+export function LoadingProgress(){const active=usePending()>0,visible=useSlow(active,200),[top,setTop]=useState(0);useLayoutEffect(()=>{if(!visible)return;const header=document.querySelector('.site-header'),update=()=>setTop(Math.max(0,header?.getBoundingClientRect().bottom||0)),observer=new ResizeObserver(update);if(header)observer.observe(header);update();window.addEventListener('scroll',update,{passive:true});window.addEventListener('resize',update);return()=>{observer.disconnect();window.removeEventListener('scroll',update);window.removeEventListener('resize',update);};},[visible]);return visible?<div className="loading-progress" style={{top}} role="status"><span className="sr-only">Cargando…</span></div>:null;}
