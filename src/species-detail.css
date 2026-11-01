@@ -1,0 +1,42 @@
+/* Ficha de especie: galería pública, datos rápidos, columna lateral y mapa (2026-10-31). Tamaños de letra originales. */
+.species-detail .detail-hero{align-items:start}
+.detail-media{display:grid;gap:12px;min-width:0}
+.detail-image-button{position:relative;display:block;width:100%;padding:0;border:0;cursor:zoom-in;transition:transform 160ms var(--ease-out)}
+.detail-photo-count{position:absolute;right:14px;bottom:14px;display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:30px;background:#10261bcc;color:#fff;font-size:13px;font-weight:600}.detail-photo-count .ui-icon{width:16px;height:16px}
+.detail-thumbs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.detail-thumbs>button{display:block;aspect-ratio:1;padding:0;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:#e9eddf;cursor:zoom-in;transition:transform 160ms var(--ease-out),border-color 160ms ease}
+.detail-thumbs>button.is-cover{border:2px solid var(--green)}
+.detail-thumbs img{display:block;width:100%;height:100%;object-fit:cover}
+.detail-image-button:active,.detail-thumbs>button:active{transform:scale(.97)}
+.detail-facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:24px 0}
+.detail-facts>div{padding:14px 16px;border-radius:12px;background:#eef2e6}
+.detail-facts dt{font-size:12px;color:var(--muted)}.detail-facts dd{margin:4px 0 0;font-size:15px;font-weight:600}
+.detail-where{gap:8px}.detail-where .ui-icon{width:18px;height:18px}
+.detail-body{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:48px;align-items:start}
+.detail-main{min-width:0}
+.detail-article{padding:28px 0;border-bottom:1px solid var(--line)}
+.detail-article:first-child{padding-top:0}
+.detail-article>h2{margin-top:0}
+.detail-article>p.preserve{font-size:15px;line-height:1.9;color:var(--ink)}
+.detail-missing{margin:20px 0 0;padding:14px 16px;border-radius:12px;background:#f1f4ea;font-size:14px;color:var(--muted)}.detail-missing strong{color:var(--ink);font-weight:600}
+.detail-article .section-title{margin-bottom:12px}
+.detail-main .specimen-grid,.detail-main .gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.detail-main .specimen-grid .actions{margin-top:8px}
+.detail-aside{position:sticky;top:96px;display:grid;gap:16px}
+.detail-aside .panel{padding:22px}
+.detail-aside h2{font-size:24px;margin:0 0 8px}
+.detail-aside .taxonomy{grid-template-columns:minmax(0,1fr);margin:0}
+.detail-qr-link{display:grid;gap:4px;background:#e7eddb;text-decoration:none;font-size:14px}.detail-qr-link strong{font:24px var(--serif);font-weight:400}.detail-qr-link span{color:var(--muted)}
+@media(hover:hover) and (pointer:fine){.detail-thumbs>button:not(.is-cover):hover{border-color:#9fb38c}.detail-qr-link:hover{background:#dde6cf}}
+@media(max-width:1100px){.detail-body{grid-template-columns:minmax(0,1fr) 280px;gap:32px}}
+@media(max-width:900px){.detail-body{grid-template-columns:minmax(0,1fr)}.detail-aside{position:static}}
+@media(max-width:768px){
+ .detail-media{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin-inline:-18px;padding-inline:18px;scroll-padding-inline:18px;scrollbar-width:none}.detail-media::-webkit-scrollbar{display:none}
+ .detail-media>.detail-image{flex:0 0 100%;scroll-snap-align:start}
+ .detail-media:has(.detail-thumbs)>.detail-image{flex-basis:86%}
+ .detail-thumbs{display:contents}.detail-thumbs>button{flex:0 0 86%;aspect-ratio:1.15;max-height:450px;border-radius:20px;scroll-snap-align:start}.detail-thumbs>button:first-child{display:none}
+ .detail-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .species-detail .detail-nav{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+}
+@media(max-width:600px){.detail-main .specimen-grid,.detail-main .gallery-grid{grid-template-columns:minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){.detail-image-button,.detail-thumbs>button{transition:none}.detail-image-button:active,.detail-thumbs>button:active{transform:none}}

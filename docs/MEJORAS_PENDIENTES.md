@@ -20,6 +20,7 @@ Propuestas anotadas el 2026-10-30 (America/Bogota) para implementarlas más adel
 11. **Mensajes de error limpios**: quitar el sufijo «[400]» que añade el cliente de Functions.
 
 ## Antes de producción
-12. **App Check** (reCAPTCHA) para las Functions.
-13. **Búsqueda y paginación en servidor** cuando el inventario supere las 1.000 especies.
-14. Revisión con `security-review` y `code-review` antes de desplegar los commits pendientes.
+12. **Correo institucional para profesores e investigadores** (anotada el 2026-10-31; obligatoria antes del próximo despliegue): solo una cuenta registrada con correo `@unipaz.edu.co` puede recibir el rol de profesor o de investigador. La comprobación va en el servidor y en las reglas, no solo en la pantalla. Hoy ningún usuario tiene el rol de profesor, así que no hay cuentas que migrar. Falta crear el rol «investigador» (hoy no existe) y definir sus permisos.
+13. **App Check** (reCAPTCHA) para las Functions.
+14. **Búsqueda y paginación en servidor** cuando el inventario supere las 1.000 especies.
+15. Revisión con `security-review` y `code-review` antes de desplegar los commits pendientes.

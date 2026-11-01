@@ -1,5 +1,6 @@
 import {LoadingState} from '../LoadingState';
 import React,{useEffect,useRef,useState} from 'react';
+import {useSearchParams} from 'react-router-dom';
 import {listSpecies,habits,normalize} from '../data';
 import {messageFor} from '../firebase';
 import {MapView,baseLayers,pointKey} from '../MapView';
@@ -15,9 +16,12 @@ const sky=code=>skies.find(([max])=>code<=max)||skies.at(-1);
 const HabitMark=({habit})=><svg viewBox="0 0 24 24" className="map-habit" aria-hidden="true"><path d={habitIcons[habit]||habitIcons.leaf}/></svg>;
 export function SpeciesMap(){
  const map=useRef(null),stage=useRef(null),list=useRef(null);
+ const [params]=useSearchParams();
  const [plants,setPlants]=useState(null),[error,setError]=useState(''),[me,setMe]=useState(null),[focus,setFocus]=useState(null),[place,setPlace]=useState(''),[busy,setBusy]=useState(false);
  const [kind,setKind]=useState('all'),[habit,setHabit]=useState('all'),[q,setQ]=useState(''),[selected,setSelected]=useState(null),[panel,setPanel]=useState(true),[layer,setLayer]=useState('satellite'),[weather,setWeather]=useState(null),[full,setFull]=useState(false);
  useEffect(()=>{listSpecies().then(rows=>setPlants(rows.filter(p=>p.map_points?.length))).catch(e=>setError(messageFor(e)));},[]);
+ // /mapa/?especie=ID (desde la ficha) abre el mapa con esa especie seleccionada y centrada en su primer registro.
+ useEffect(()=>{const plant=plants?.find(p=>p.id===params.get('especie')),first=plant&&pointsFor(plant)[0];if(!first)return;setSelected(plant.id);setFocus({latitude:first.latitude,longitude:first.longitude,zoom:18});},[plants,params]);
  // Tiempo actual en el campus (Open-Meteo, gratuito y sin clave); si falla, el recuadro no aparece.
  useEffect(()=>{const abort=new AbortController();fetch(`https://api.open-meteo.com/v1/forecast?latitude=${campus.latitude}&longitude=${campus.longitude}&current=temperature_2m,wind_speed_10m,weather_code&wind_speed_unit=ms&timezone=America%2FBogota`,{signal:abort.signal}).then(r=>r.ok?r.json():null).then(d=>{if(Number.isFinite(d?.current?.temperature_2m))setWeather(d.current);}).catch(()=>{});return()=>abort.abort();},[]);
  useEffect(()=>{const sync=()=>setFull(document.fullscreenElement===stage.current);document.addEventListener('fullscreenchange',sync);return()=>document.removeEventListener('fullscreenchange',sync);},[]);
