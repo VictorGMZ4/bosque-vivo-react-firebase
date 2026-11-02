@@ -1,12 +1,13 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {db} from '../functions/firebase.js';
+import {db,authAdmin} from '../functions/firebase.js';
 import {mutateData} from '../functions/service.js';
 import {keyFor} from '../functions/domain.js';
 
 test('photo specimens generate unique codes and retain photos, counts and audit on update',async()=>{
  assert.equal(process.env.GCLOUD_PROJECT,'demo-bosque-vivo');
  const suffix=String(Date.now()),auth={uid:'qa-specimen-photo-'+suffix,token:{}},species=[];
+ await authAdmin.createUser({uid:auth.uid,email:auth.uid+'@unipaz.edu.co',emailVerified:true});
  await db.collection('roles').doc(auth.uid).set({role:'teacher'});
  const createSpecies=async name=>{const result=await mutateData(auth,{entity:'species',action:'create',data:{common_name:name,scientific_name:`QA specimen photo ${name} ${suffix}`,family:'QA'}});species.push(result.id);return result.id;};
  const read=async id=>(await db.collection('specimens').doc(id).get()).data();
@@ -35,6 +36,6 @@ test('photo specimens generate unique codes and retain photos, counts and audit 
   for(const id of species){for(const name of ['photos','specimens'])for(const d of (await db.collection(name).where('species_id','==',id).get()).docs){if(name==='specimens')await db.collection('specimen_codes').doc(keyFor(d.data().code)).delete();await d.ref.delete();}const s=(await db.collection('species').doc(id).get()).data();if(s)await db.collection('scientific_names').doc(keyFor(s.scientific_name)).delete();await db.collection('species').doc(id).delete();}
   for(const d of (await db.collection('specimen_codes').where('id','==',auth.uid).get()).docs)await d.ref.delete();
   for(const d of (await db.collection('audit').where('actor_id','==',auth.uid).get()).docs)await d.ref.delete();
-  await db.collection('roles').doc(auth.uid).delete();
+  await db.collection('roles').doc(auth.uid).delete();await authAdmin.deleteUser(auth.uid);
  }
 });

@@ -1,11 +1,11 @@
 import {Timestamp} from 'firebase-admin/firestore';
 import {db} from './firebase.js';
-import {requireRole,roles} from './access.js';
+import {requireRole,roles,staff} from './access.js';
 import {fail,validateId} from './domain.js';
 
 const quizzes=db.collection('learning_quizzes');
 const attemptsFor=uid=>db.collection('learning_results').doc(uid).collection('attempts');
-const editable=(quiz,auth,role)=>role==='admin'||role==='teacher'&&quiz.ownerId===auth.uid;
+const editable=(quiz,auth,role)=>role==='admin'||staff(role)&&quiz.ownerId===auth.uid;
 function text(value,label,max,required=false){
  if(value==null)value='';
  if(typeof value!=='string'||value.trim().length>max||required&&!value.trim())fail(`${label}: escribe ${required?'un texto de 1 a':'hasta'} ${max} caracteres.`);
@@ -32,7 +32,7 @@ export async function learningAction(auth,input){
  if(input.action==='learningList'){
   const published=await quizzes.where('published','==',true).limit(100).get();
   const rows=new Map(published.docs.map(d=>[d.id,d]));
-  if(role==='teacher'||role==='admin'){
+  if(staff(role)||role==='admin'){
    const managed=await (role==='admin'?quizzes:quizzes.where('ownerId','==',auth.uid)).limit(100).get();
    for(const d of managed.docs)rows.set(d.id,d);
   }
@@ -50,10 +50,10 @@ export async function learningAction(auth,input){
   return {quiz:{...metadata(ref.id,data,canEdit),questions:data.questions.map(q=>canEdit?{...q}:{prompt:q.prompt,options:q.options,speciesId:q.speciesId})}};
  }
  if(input.action==='learningSave'){
-  await requireRole(auth,['teacher','admin']);
+  await requireRole(auth,['teacher','researcher','admin']);
   const data=validateQuiz(input.data),ref=input.id?quizzes.doc(validateId(input.id)):quizzes.doc();
   return db.runTransaction(async tx=>{
-   const currentRole=await requireRole(auth,['teacher','admin'],tx),snapshot=await tx.get(ref);
+   const currentRole=await requireRole(auth,['teacher','researcher','admin'],tx),snapshot=await tx.get(ref);
    if(input.id&&!snapshot.exists)fail('El cuestionario ya no existe.','not-found');
    const previous=snapshot.data();
    if(previous&&!editable(previous,auth,currentRole))fail('Solo el autor o un administrador puede editarlo.','permission-denied');

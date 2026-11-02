@@ -10,8 +10,8 @@ test('proposal photos are private, immutable and writable only by the draft auth
  assert.equal(process.env.GCLOUD_PROJECT,'demo-bosque-vivo');
  const id='qa-photo-permissions-'+Date.now(),users=[],apps=[];
  async function account(role){
-  const email=`${id}-${role}@example.test`,password='QA-local-storage-123!';
-  const user=await authAdmin.createUser({email,password});users.push(user.uid);
+  const email=`${id}-${role}@unipaz.edu.co`,password='QA-local-storage-123!';
+  const user=await authAdmin.createUser({email,password,emailVerified:true});users.push(user.uid);
   await db.collection('roles').doc(user.uid).set({role});
   const app=initializeApp({projectId:'demo-bosque-vivo',apiKey:'demo-key',storageBucket:'demo-bosque-vivo.firebasestorage.app'},user.uid);apps.push(app);
   const auth=getAuth(app);connectAuthEmulator(auth,'http://127.0.0.1:9099',{disableWarnings:true});await signInWithEmailAndPassword(auth,email,password);

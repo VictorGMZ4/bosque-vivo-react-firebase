@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {db,bucket} from '../functions/firebase.js';
+import {db,bucket,authAdmin} from '../functions/firebase.js';
 import {workspaceAction} from '../functions/workspace.js';
 import {mutateData} from '../functions/service.js';
 import {keyFor} from '../functions/domain.js';
@@ -9,6 +9,7 @@ test('teacher model and hotspots remain private until approval, survive correcti
  assert.equal(process.env.GCLOUD_PROJECT,'demo-bosque-vivo');const suffix=String(Date.now()),teacher={uid:'qa-model-teacher-'+suffix,token:{}},admin={uid:'qa-model-admin-'+suffix,token:{}},student={uid:'qa-model-student-'+suffix,token:{}};
  const data={common_name:'QA Modelo '+suffix,scientific_name:'QA Modelo '+suffix,family:'QA',habit:'herb',is_published:false},hotspots=[{id:'leaf',title:'Hoja de prueba',description:'Texto sintético',position:[0,1,0],normal:[0,1,0]}];let id;
  for(const [a,role]of [[teacher,'teacher'],[admin,'admin'],[student,'student']])await db.collection('roles').doc(a.uid).set({role});
+ for(const a of [teacher])await authAdmin.createUser({uid:a.uid,email:a.uid+'@unipaz.edu.co',emailVerified:true});
  try{
   await assert.rejects(mutateData(student,{entity:'species',action:'create',data}));
   ({id}=await workspaceAction(teacher,{action:'draftSubmission',data}));
@@ -30,6 +31,7 @@ test('teacher model and hotspots remain private until approval, survive correcti
   await mutateData(admin,{entity:'species',action:'update',id,data:{...data,model_3d:''}});
   assert.deepEqual((await db.collection('species').doc(id).get()).data().model_hotspots,[]);
  }finally{
+  for(const a of [teacher])await authAdmin.deleteUser(a.uid);
   if(id){for(const c of ['species','submissions'])await db.collection(c).doc(id).delete();const audit=await db.collection('audit').where('entity_id','==',id).get();for(const d of audit.docs)await d.ref.delete();await bucket.deleteFiles({prefix:`submissions/${id}/`});await bucket.deleteFiles({prefix:`species/${id}/`});}
   await db.collection('scientific_names').doc(keyFor(data.scientific_name)).delete();for(const a of [teacher,admin,student])await db.collection('roles').doc(a.uid).delete();const notes=await db.collection('notifications').get();for(const n of notes.docs)if(n.data().owner_id===teacher.uid||n.data().title.includes(suffix))await n.ref.delete();
  }

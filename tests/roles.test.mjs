@@ -1,3 +1,4 @@
+import './institutional-email.test.mjs';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {initializeApp,deleteApp} from 'firebase/app';
@@ -11,7 +12,7 @@ test('roles, personal profiles and transactional species moderation',async()=>{
  assert.equal(process.env.GCLOUD_PROJECT,'demo-bosque-vivo');
  const stamp=Date.now(),users=[],apps=[],proposals=[];
  const data={common_name:'QA Propuesta',scientific_name:'QA propuesta '+stamp,family:'QA',habit:'herb',is_published:false};
- async function account(role,legacy=false){const email=`qa-${role}-${stamp}@example.test`,password='Local-test-123!';const u=await authAdmin.createUser({email,password});users.push(u.uid);if(legacy)await authAdmin.setCustomUserClaims(u.uid,{admin:true});await db.collection('roles').doc(u.uid).set({role});const app=initializeApp({projectId:'demo-bosque-vivo',apiKey:'demo-key'},u.uid);apps.push(app);const auth=getAuth(app);connectAuthEmulator(auth,'http://127.0.0.1:9099',{disableWarnings:true});await signInWithEmailAndPassword(auth,email,password);const f=getFunctions(app,'us-central1');connectFunctionsEmulator(f,'127.0.0.1',5001);const store=getFirestore(app);connectFirestoreEmulator(store,'127.0.0.1',8080);return {uid:u.uid,store,work:async v=>(await httpsCallable(f,'workspace')(v)).data,mutate:async v=>(await httpsCallable(f,'mutate')(v)).data};}
+ async function account(role,legacy=false){const email=`qa-${role}-${stamp}@unipaz.edu.co`,password='Local-test-123!';const u=await authAdmin.createUser({email,password,emailVerified:true});users.push(u.uid);if(legacy)await authAdmin.setCustomUserClaims(u.uid,{admin:true});await db.collection('roles').doc(u.uid).set({role});const app=initializeApp({projectId:'demo-bosque-vivo',apiKey:'demo-key'},u.uid);apps.push(app);const auth=getAuth(app);connectAuthEmulator(auth,'http://127.0.0.1:9099',{disableWarnings:true});await signInWithEmailAndPassword(auth,email,password);const f=getFunctions(app,'us-central1');connectFunctionsEmulator(f,'127.0.0.1',5001);const store=getFirestore(app);connectFirestoreEmulator(store,'127.0.0.1',8080);return {uid:u.uid,store,work:async v=>(await httpsCallable(f,'workspace')(v)).data,mutate:async v=>(await httpsCallable(f,'mutate')(v)).data};}
  try{
   const student=await account('student'),teacher=await account('teacher'),admin=await account('admin',true);
   await student.work({action:'saveProfile',data:{name:'Estudiante QA',institution:'UNIPAZ',bio:'Perfil propio'}});

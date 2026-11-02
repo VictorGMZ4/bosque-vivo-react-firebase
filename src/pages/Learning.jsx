@@ -10,7 +10,7 @@ const newQuiz=()=>({title:'',description:'',published:false,questions:[newQuesti
 
 export function Learning(){const {user}=useAuth();return <Guard><LearningContent key={user?.uid}/></Guard>;}
 function LearningContent(){
- const {role}=useAuth(),canCreate=['teacher','admin'].includes(role);
+ const {role}=useAuth(),canCreate=['teacher','researcher','admin'].includes(role);
  const [quizzes,setQuizzes]=useState([]),[attempts,setAttempts]=useState([]),[species,setSpecies]=useState([]);
  const [editor,setEditor]=useState(null),[active,setActive]=useState(null),[answers,setAnswers]=useState([]),[attemptId,setAttemptId]=useState(''),[result,setResult]=useState(null);
  const [busy,setBusy]=useState(false),[loading,setLoading]=useState(true),[error,setError]=useState(''),[notice,setNotice]=useState('');
