@@ -3,7 +3,7 @@ service cloud.firestore {
  match /databases/{database}/documents {
   function roleDoc(){return get(/databases/$(database)/documents/roles/$(request.auth.uid)).data;}
   function admin(){return request.auth != null && (exists(/databases/$(database)/documents/roles/$(request.auth.uid)) ? roleDoc().role == 'admin' && roleDoc().get('disabled', false) != true : request.auth.token.get('admin', false) == true);}
-  function teacher(){return request.auth != null && exists(/databases/$(database)/documents/roles/$(request.auth.uid)) && roleDoc().role in ['teacher', 'researcher'] && roleDoc().get('disabled', false) != true;}
+  function teacher(){return request.auth != null && exists(/databases/$(database)/documents/roles/$(request.auth.uid)) && roleDoc().role in ['teacher', 'researcher'] && roleDoc().get('disabled', false) != true && request.auth.token.get('email', '').lower().matches('.*@unipaz[.]edu[.]co') && request.auth.token.get('email_verified', false) == true;}
   function published(id){return get(/databases/$(database)/documents/species/$(id)).data.is_published == true;}
   function owner(data){return request.auth != null && (data.get('created_by', '') == request.auth.uid || data.get('submitted_by', '') == request.auth.uid);}
   function ownsSpecies(id){return teacher() && owner(get(/databases/$(database)/documents/species/$(id)).data);}

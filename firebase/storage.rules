@@ -8,7 +8,7 @@ service firebase.storage {
   function submission(id){return firestore.get(/databases/(default)/documents/submissions/$(id)).data;}
   function reviewer(id){return admin() || (teacher() && submission(id).status != 'draft');}
   function ownsSpecies(id){return teacher() && (firestore.get(/databases/(default)/documents/species/$(id)).data.get('created_by', '') == request.auth.uid || firestore.get(/databases/(default)/documents/species/$(id)).data.get('submitted_by', '') == request.auth.uid);}
-  function teacher(){return request.auth != null && (admin() || (firestore.exists(/databases/(default)/documents/roles/$(request.auth.uid)) && roleDoc().role in ['teacher', 'researcher'] && roleDoc().get('disabled', false) != true));}
+  function teacher(){return request.auth != null && (admin() || (firestore.exists(/databases/(default)/documents/roles/$(request.auth.uid)) && roleDoc().role in ['teacher', 'researcher'] && roleDoc().get('disabled', false) != true && request.auth.token.get('email', '').lower().matches('.*@unipaz[.]edu[.]co') && request.auth.token.get('email_verified', false) == true));}
   match /submissions/{id}/photos/{file} {
    allow read: if request.auth != null && (reviewer(id) || submission(id).owner_id == request.auth.uid);
    allow create: if resource == null && active() && firestore.get(/databases/(default)/documents/submissions/$(id)).data.owner_id == request.auth.uid && firestore.get(/databases/(default)/documents/submissions/$(id)).data.status == 'draft' && request.resource.size <= 8 * 1024 * 1024 && request.resource.contentType.matches('image/(jpeg|png|webp)') && file.matches('[a-zA-Z0-9_-]+[.](jpg|png|webp)');

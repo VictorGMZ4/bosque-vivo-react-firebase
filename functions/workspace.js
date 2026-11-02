@@ -21,13 +21,13 @@ export async function workspaceAction(auth,input){
  if(action==='submissionAuthors'){
   const role=await requireRole(auth,['admin','teacher','researcher']);if(!Array.isArray(input.ids)||input.ids.length>500)fail('Solicitud inválida.');const ids=[...new Set(input.ids.map(validateId))];
   const owners=ids.length?(await db.getAll(...ids.map(id=>db.collection('submissions').doc(id)))).filter(s=>s.exists&&(role==='admin'||s.data().status!=='draft'||s.data().owner_id===auth.uid)).map(s=>s.data().owner_id):[];const people=await peopleFor(owners);
-  return {authors:Object.fromEntries(owners.filter(Boolean).map(uid=>[uid,people[uid]]))};
+  return {authors:Object.fromEntries(owners.filter(Boolean).map(uid=>[uid,role==='admin'?people[uid]:{name:people[uid]?.name||'Autor sin nombre en el perfil',email:''}]))};
  }
  if(action==='orphanReport')return (await import('./storage-report.js')).orphanReport(auth);
  if(typeof action==='string'&&action.startsWith('learning'))return (await import('./learning.js')).learningAction(auth,input);
  if(['collectionList','collectionCreate','collectionDelete','favoriteSave','favoriteRemove'].includes(action))return (await import('./collections.js')).collectionsAction(auth,input);
  if(action==='requestTeacher'){
-  const account=await authAdmin.getUser(auth.uid),ref=db.collection('role_requests').doc(auth.uid);
+  const account=await authAdmin.getUser(auth.uid),ref=db.collection('role_requests').doc(auth.uid);if(!institutional(account))fail('Para ser profesor o investigador, la cuenta debe usar un correo institucional @unipaz.edu.co.','failed-precondition');
   await db.runTransaction(async tx=>{await requireRole(auth,['student'],tx);const previous=await tx.get(ref);if(previous.data()?.status==='pending')return;tx.set(ref,{owner_id:auth.uid,email:account.email||'',status:'pending',created_at:stamp(),feedback:''});notify(tx,{audience:'admin',title:'Nueva solicitud de profesor o investigador',link:'/usuarios/'});});return {saved:true};
  }
  if(action==='reviewAccount'){

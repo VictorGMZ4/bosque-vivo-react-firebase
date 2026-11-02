@@ -7,7 +7,7 @@ import {keyFor} from '../functions/domain.js';
 test('photo specimens generate unique codes and retain photos, counts and audit on update',async()=>{
  assert.equal(process.env.GCLOUD_PROJECT,'demo-bosque-vivo');
  const suffix=String(Date.now()),auth={uid:'qa-specimen-photo-'+suffix,token:{}},species=[];
- await authAdmin.createUser({uid:auth.uid,email:auth.uid+'@unipaz.edu.co',emailVerified:true});
+ await authAdmin.createUser({uid:auth.uid,email:auth.uid+'@unipaz.edu.co',emailVerified:true});auth.token={...auth.token,email:auth.uid+'@unipaz.edu.co',email_verified:true};
  await db.collection('roles').doc(auth.uid).set({role:'teacher'});
  const createSpecies=async name=>{const result=await mutateData(auth,{entity:'species',action:'create',data:{common_name:name,scientific_name:`QA specimen photo ${name} ${suffix}`,family:'QA'}});species.push(result.id);return result.id;};
  const read=async id=>(await db.collection('specimens').doc(id).get()).data();

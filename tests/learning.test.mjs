@@ -10,7 +10,7 @@ for(const staffRole of ['teacher','researcher'])test(staffRole+' learning protec
  let id;
  const data={title:'Reconocer hojas',description:'Observa la forma de las hojas.',published:true,questions:[{prompt:'¿Qué especie tiene hojas compuestas?',options:['Guayacán','Mango'],correctIndex:0,explanation:'El guayacán presenta hojas compuestas.',speciesId:''}]};
  const call=(auth,action,input={})=>learningAction(auth,{action,...input});
- for(const a of [teacher,other])await authAdmin.createUser({uid:a.uid,email:a.uid+'@unipaz.edu.co',emailVerified:true});
+ for(const a of [teacher,other]){await authAdmin.createUser({uid:a.uid,email:a.uid+'@unipaz.edu.co',emailVerified:true});a.token={...a.token,email:a.uid+'@unipaz.edu.co',email_verified:true};}
  try{
   for(const [auth,role] of [[teacher,staffRole],[other,staffRole],[student,'student'],[admin,'admin']])await db.collection('roles').doc(auth.uid).set({role});
   await assert.rejects(call(null,'learningList'),{code:'unauthenticated'});

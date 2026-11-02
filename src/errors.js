@@ -4,4 +4,4 @@ const known={'auth/user-disabled':blockedMessage,'permission-denied':'No tienes 
 const plain=code=>String(code||'').replace(/^(functions|firestore)\//,'');
 export function cleanMessage(message){return String(message||'').replace(/^Firebase:\s*/,'').replace(/\s*\((?:auth|functions|storage|firestore)\/[\w-]+\)\.?$/,'').replace(/\s*\[\d{3}\]\.?$/,'').replace(/\.{2,}$/,'.').trim();}
 // Las funciones del servidor ya responden en español: se usa su texto (limpio), salvo si no hay conexión.
-export function messageFor(error){const code=String(error?.code||''),fromServer=code.startsWith('functions/')&&plain(code)!=='unavailable'&&cleanMessage(error?.message);return fromServer||known[code]||known[plain(code)]||cleanMessage(error?.message)||'No se pudo completar la operación.';}
+export function messageFor(error){const code=String(error?.code||''),fromServer=code.startsWith('functions/')&&plain(code)!=='unavailable'&&cleanMessage(error?.message);const cleaned=cleanMessage(error?.message);return fromServer||known[code]||known[plain(code)]||(cleaned&&cleaned!=='Error'?cleaned:'')||'No se pudo completar la operación.';}

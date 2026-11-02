@@ -15,4 +15,5 @@ test('known codes get clear Spanish messages',()=>{
  assert.equal(messageFor({code:'permission-denied',message:'Missing or insufficient permissions.'}),'No tienes acceso a este registro o ya no está publicado.');
  assert.equal(messageFor({code:'functions/unavailable',message:'unavailable [503]'}),'No se pudo conectar con Firebase. Comprueba los emuladores o tu conexión.');
  assert.equal(messageFor({}),'No se pudo completar la operación.');
+ assert.equal(messageFor({code:'auth/missing-password',message:'Firebase: Error (auth/missing-password).'}),'No se pudo completar la operación.');
 });

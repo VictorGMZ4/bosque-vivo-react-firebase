@@ -9,7 +9,7 @@ test('teacher model and hotspots remain private until approval, survive correcti
  assert.equal(process.env.GCLOUD_PROJECT,'demo-bosque-vivo');const suffix=String(Date.now()),teacher={uid:'qa-model-teacher-'+suffix,token:{}},admin={uid:'qa-model-admin-'+suffix,token:{}},student={uid:'qa-model-student-'+suffix,token:{}};
  const data={common_name:'QA Modelo '+suffix,scientific_name:'QA Modelo '+suffix,family:'QA',habit:'herb',is_published:false},hotspots=[{id:'leaf',title:'Hoja de prueba',description:'Texto sintético',position:[0,1,0],normal:[0,1,0]}];let id;
  for(const [a,role]of [[teacher,'teacher'],[admin,'admin'],[student,'student']])await db.collection('roles').doc(a.uid).set({role});
- for(const a of [teacher])await authAdmin.createUser({uid:a.uid,email:a.uid+'@unipaz.edu.co',emailVerified:true});
+ for(const a of [teacher]){await authAdmin.createUser({uid:a.uid,email:a.uid+'@unipaz.edu.co',emailVerified:true});a.token={...a.token,email:a.uid+'@unipaz.edu.co',email_verified:true};}
  try{
   await assert.rejects(mutateData(student,{entity:'species',action:'create',data}));
   ({id}=await workspaceAction(teacher,{action:'draftSubmission',data}));
