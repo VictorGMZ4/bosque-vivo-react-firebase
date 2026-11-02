@@ -8,6 +8,8 @@ import {StorageImage} from '../media';
 import {Icon} from '../ui/Icon';
 import {habitIcons,pinColors} from '../pins';
 import {campus,campusRadiusKm,distanceKm} from '../campus';
+import '../map-near.css';
+const formatKm=km=>km<1?`${Math.max(1,Math.round(km*1000))} m`:`${km.toLocaleString('es-CO',{maximumFractionDigits:1})} km`;
 export const pointsFor=plant=>(plant.map_points||[]).map(p=>({...p,key:`${plant.id}:${p.id}`,speciesId:plant.id,habit:plant.habit,title:plant.common_name,subtitle:p.type==='specimen'?`Ejemplar · ${p.caption}`:p.caption&&p.caption!==plant.common_name?p.caption:'Fotografía de registro',link:`/especies/${plant.id}/`}));
 const kinds=[['all','Todos'],['photo','Fotografías'],['specimen','Ejemplares']];
 // Códigos WMO de Open-Meteo agrupados por el máximo de cada tramo.
@@ -17,6 +19,7 @@ const HabitMark=({habit})=><svg viewBox="0 0 24 24" className="map-habit" aria-h
 export function SpeciesMap(){
  const map=useRef(null),stage=useRef(null),list=useRef(null);
  const [params]=useSearchParams();
+ const [tab,setTab]=useState('all');
  const [plants,setPlants]=useState(null),[error,setError]=useState(''),[me,setMe]=useState(null),[focus,setFocus]=useState(null),[place,setPlace]=useState(''),[busy,setBusy]=useState(false);
  const [kind,setKind]=useState('all'),[habit,setHabit]=useState('all'),[q,setQ]=useState(''),[selected,setSelected]=useState(null),[panel,setPanel]=useState(true),[layer,setLayer]=useState('satellite'),[weather,setWeather]=useState(null),[full,setFull]=useState(false);
  useEffect(()=>{listSpecies().then(rows=>setPlants(rows.filter(p=>p.map_points?.length))).catch(e=>setError(messageFor(e)));},[]);
@@ -29,6 +32,9 @@ export function SpeciesMap(){
  const matches=(plants||[]).filter(p=>(habit==='all'||p.habit===habit)&&(!q||normalize([p.common_name,p.scientific_name,p.family].join(' ')).includes(normalize(q))));
  const visible=matches.flatMap(pointsFor).filter(p=>kind==='all'||p.type===kind),shown=matches.filter(p=>visible.some(v=>v.speciesId===p.id));
  const toCampus=()=>setFocus({...campus,zoom:17});
+ // «Cerca de ti»: el punto más cercano de cada especie a tu posición, solo dentro del campus.
+ const inCampus=me&&distanceKm(me,campus)<=campusRadiusKm,nearby=inCampus?(plants||[]).map(plant=>pointsFor(plant).map(point=>({plant,point,km:distanceKm(me,point)})).sort((a,b)=>a.km-b.km)[0]).filter(Boolean).sort((a,b)=>a.km-b.km):[];
+ const openNear=()=>{setTab('near');if(!me&&!busy)locate();};
  // Tu ubicación solo se usa en este navegador para centrar el mapa; no se guarda ni se envía.
  function locate(){if(!navigator.geolocation){setPlace('Este navegador no permite obtener la ubicación. Te mostramos el campus.');toCampus();return;}setBusy(true);setPlace('Obteniendo tu ubicación…');navigator.geolocation.getCurrentPosition(p=>{const here={latitude:p.coords.latitude,longitude:p.coords.longitude,accuracy:p.coords.accuracy},km=distanceKm(here,campus);setMe(here);setBusy(false);if(km<=campusRadiusKm){setFocus({...here,zoom:18});setPlace('Estás en el campus. El punto azul marca tu posición.');}else{toCampus();setPlace(`Estás a ${km.toLocaleString('es-CO',{maximumFractionDigits:km<10?1:0})} km del campus; te mostramos el campus.`);}},()=>{setBusy(false);toCampus();setPlace('No se pudo obtener tu ubicación. Actívala en los permisos del navegador para este sitio y vuelve a intentarlo. Te mostramos el campus.');},{enableHighAccuracy:true,timeout:15000,maximumAge:60000});}
  function choose(plant){setSelected(plant.id);map.current?.show(visible.filter(p=>p.speciesId===plant.id).map(pointKey));}
@@ -40,6 +46,8 @@ export function SpeciesMap(){
   <aside className="map-panel" aria-label="Especies en el mapa" hidden={!panel}>
    <div className="map-panel-head"><p className="eyebrow">DÓNDE CRECEN</p><h1>Mapa de registros</h1><p className="muted" role="status">{plants?`${all.length} ${all.length===1?'punto':'puntos'} · ${plants.length} ${plants.length===1?'especie':'especies'}`:'Cargando registros…'}</p>
     <div className="actions"><button type="button" className="button small" onClick={locate} disabled={busy}><Icon name="target"/>{busy?'Buscando…':'Usar mi ubicación'}</button><button type="button" className="button outline small" onClick={toCampus}><Icon name="home"/>Ir al campus</button></div></div>
+   <div className="map-tabs" role="group" aria-label="Vista del panel"><button type="button" aria-pressed={tab==='all'} onClick={()=>setTab('all')}>Explorar</button><button type="button" aria-pressed={tab==='near'} onClick={openNear}><Icon name="target"/>Cerca de ti</button></div>
+   {tab==='all'&&<>
    <label className="map-search"><Icon name="search"/><span className="sr-only">Buscar especie</span><input type="search" placeholder="Buscar especie o familia…" value={q} onChange={e=>setQ(e.target.value)}/></label>
    {error&&<p className="notice error" role="alert">{error}</p>}
    <h2 className="map-group">Tipo de registro</h2>
@@ -49,6 +57,8 @@ export function SpeciesMap(){
    <h2 className="map-group">Especies <span className="map-count">{shown.length}</span></h2>
    {plants===null&&<LoadingState variant="list" label="Cargando registros…"/>}<ul className="map-species" ref={list}>{shown.map(p=><li key={p.id}><button type="button" data-id={p.id} className={selected===p.id?'is-active':''} aria-pressed={selected===p.id} onClick={()=>choose(p)}><StorageImage path={p.photo} alt=""/><span className="map-species-text"><strong>{p.common_name}</strong><em>{p.scientific_name}</em><span className="map-tags"><span className="map-tag habit"><HabitMark habit={p.habit}/>{habits[p.habit]||'Planta'}</span>{p.family&&<span className="map-tag">{p.family}</span>}</span></span><span className="map-count">{visible.filter(v=>v.speciesId===p.id).length}</span></button></li>)}</ul>
    {plants&&!shown.length&&<p className="empty">{all.length?'Ninguna especie coincide con los filtros.':'Aún no hay fotografías ni ejemplares con ubicación.'}</p>}
+   </>}
+   {tab==='near'&&<div className="map-near">{!me?<div className="map-near-empty"><p>Activa tu ubicación para ver qué especies tienes más cerca en el campus.</p><button type="button" className="button small" onClick={locate} disabled={busy}><Icon name="target"/>{busy?'Buscando…':'Usar mi ubicación'}</button></div>:!inCampus?<p className="notice">Estás a {formatKm(distanceKm(me,campus))} del campus. «Cerca de ti» funciona dentro del campus UNIPAZ.</p>:<><p className="muted" role="status">{nearby.length?nearby.length===1?'1 especie con registro cerca de ti':`${nearby.length} especies, de la más cercana a la más lejana`:'No hay registros con ubicación todavía.'}{me.accuracy?` · precisión ±${Math.round(me.accuracy)} m`:''}</p><ul className="map-species">{nearby.map(({plant,point,km})=><li key={plant.id}><button type="button" className={selected===plant.id?'is-active':''} aria-pressed={selected===plant.id} onClick={()=>{setSelected(plant.id);map.current?.show([pointKey(point)]);}}><StorageImage path={plant.photo} alt=""/><span className="map-species-text"><strong>{plant.common_name}</strong><em>{plant.scientific_name}</em><span className="map-tags"><span className="map-tag habit"><HabitMark habit={plant.habit}/>{habits[plant.habit]||'Planta'}</span></span></span><span className="map-distance">a {formatKm(km)}</span></button></li>)}</ul></>}</div>}
   </aside>
   <button type="button" className="map-toggle" onClick={()=>setPanel(!panel)} aria-expanded={panel} aria-label={panel?'Ocultar el panel de especies':'Mostrar el panel de especies'}><Icon name="chevron"/></button>
   <div className={`map-stage${full?' is-full':''}`} ref={stage}>

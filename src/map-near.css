@@ -1,0 +1,10 @@
+/* Pestañas del panel del mapa y lista «Cerca de ti» (2026-11-02). */
+.map-tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:14px 0 4px;padding:4px;border-radius:12px;background:var(--surface-2,var(--surface-eef2e6))}
+.map-tabs button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:6px 10px;border:0;border-radius:9px;background:transparent;color:var(--muted);font-size:14px;font-weight:600;transition:background-color 160ms ease,color 160ms ease}
+.map-tabs button[aria-pressed=true]{background:var(--surface);color:var(--green);box-shadow:0 1px 3px var(--shadow-213e3220)}
+.map-tabs .ui-icon{width:17px;height:17px}
+.map-near{display:grid;gap:10px;margin-top:10px}.map-near>.muted{margin:0}.map-near>.notice{margin:0}
+.map-near-empty{display:grid;gap:12px;justify-items:start;padding:16px;border:1px dashed var(--line);border-radius:14px}.map-near-empty p{margin:0;font-size:14px}
+.map-near-empty .button .ui-icon{width:18px;height:18px;margin-right:6px}
+.map-distance{flex:none;padding:4px 10px;border-radius:30px;background:var(--surface-2,var(--surface-eef2e6));color:var(--green);font-size:13px;font-weight:600;white-space:nowrap}
+@media(hover:hover) and (pointer:fine){.map-tabs button[aria-pressed=false]:hover{color:var(--ink)}}
